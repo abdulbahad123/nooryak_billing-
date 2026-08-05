@@ -131,7 +131,7 @@
                     product: {
                         verified: true,
                         other_domain_verified: false,
-                        version: '4.1.0',
+                        version: '{{ $appVersion }}',
                         modules: []
                     }
                 };
