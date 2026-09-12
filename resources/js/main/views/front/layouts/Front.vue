@@ -296,6 +296,11 @@ export default defineComponent({
     align-items: center;
     justify-content: space-between;
     gap: 20px;
+
+    @media (max-width: 768px) {
+        padding: 0 12px;
+        gap: 10px;
+    }
 }
 
 .brand-logo-link {
@@ -452,6 +457,10 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    @media (max-width: 768px) {
+        padding: 0 12px;
+    }
 }
 
 .cat-links-scroll {
@@ -464,6 +473,12 @@ export default defineComponent({
     &::-webkit-scrollbar {
         display: none;
     }
+
+    @media (max-width: 768px) {
+        gap: 16px;
+        padding: 8px 0;
+        width: 100%;
+    }
 }
 
 .cat-nav-link {
@@ -473,6 +488,10 @@ export default defineComponent({
     text-decoration: none;
     white-space: nowrap;
     transition: color 0.2s;
+
+    @media (max-width: 768px) {
+        font-size: 12px;
+    }
 
     &:hover, &.router-link-active {
         color: #2563eb;

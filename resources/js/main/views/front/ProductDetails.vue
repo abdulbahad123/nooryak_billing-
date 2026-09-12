@@ -717,6 +717,10 @@ export default defineComponent({
     max-width: 1240px;
     margin: 0 auto;
     padding: 0 20px;
+
+    @media (max-width: 640px) {
+        padding: 0 12px;
+    }
 }
 
 .pdp-loading-spinner {
@@ -732,6 +736,10 @@ export default defineComponent({
     background-color: #f9fafb;
     border-bottom: 1px solid #f3f4f6;
     padding: 14px 0;
+
+    @media (max-width: 640px) {
+        padding: 10px 0;
+    }
 }
 
 .pdp-breadcrumb {
@@ -765,6 +773,10 @@ export default defineComponent({
 /* Main Grid Layout */
 .pdp-main-section {
     padding-top: 32px;
+
+    @media (max-width: 640px) {
+        padding-top: 14px;
+    }
 }
 
 .pdp-grid {
@@ -774,7 +786,11 @@ export default defineComponent({
 
     @media (max-width: 991px) {
         grid-template-columns: 1fr;
-        gap: 32px;
+        gap: 24px;
+    }
+
+    @media (max-width: 640px) {
+        gap: 16px;
     }
 }
 
@@ -785,6 +801,7 @@ export default defineComponent({
 
     @media (max-width: 640px) {
         flex-direction: column-reverse;
+        gap: 12px;
     }
 }
 
@@ -799,7 +816,9 @@ export default defineComponent({
         flex-direction: row;
         width: 100%;
         overflow-x: auto;
-        padding-bottom: 8px;
+        padding-bottom: 4px;
+        gap: 10px;
+        box-sizing: border-box;
     }
 }
 
@@ -814,6 +833,14 @@ export default defineComponent({
     cursor: pointer;
     transition: all 0.2s ease;
     outline: none;
+
+    @media (max-width: 640px) {
+        width: 66px;
+        height: 66px;
+        flex-shrink: 0;
+        border-radius: 8px;
+        padding: 3px;
+    }
 
     img {
         width: 100%;
@@ -839,9 +866,12 @@ export default defineComponent({
     align-items: center;
     justify-content: center;
     padding: 24px;
+    box-sizing: border-box;
 
     @media (max-width: 640px) {
-        height: 380px;
+        height: 320px;
+        padding: 12px;
+        border-radius: 10px;
     }
 
     .pdp-preview-image {
