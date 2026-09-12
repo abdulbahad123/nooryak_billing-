@@ -13,7 +13,7 @@
 									height: 'auto',
 									objectFit: 'contain',
 								}"
-								:src="nooryakDashboardLogo"
+								:src="appSetting.light_logo_url || nooryakDashboardLogo"
 							/>
 						</div>
 					</a-col>

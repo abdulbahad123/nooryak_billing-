@@ -194,17 +194,29 @@ export default defineComponent({
         });
 
         watch(
-            () => props.formData.top_banners_text,
+            () => props.formData,
             (newVal) => {
-                initBannerTexts(newVal);
-            }
+                if (newVal) {
+                    addEditForm.formData = newVal;
+                    if (newVal.top_banners_text) {
+                        initBannerTexts(newVal.top_banners_text);
+                    }
+                }
+            },
+            { deep: true, immediate: true }
         );
 
         const initBannerTexts = (existingTexts) => {
             if (Array.isArray(existingTexts) && existingTexts.length > 0) {
                 for (let i = 0; i < 3; i++) {
                     if (existingTexts[i]) {
-                        bannerTexts.value[i] = { ...bannerTexts.value[i], ...existingTexts[i] };
+                        bannerTexts.value[i] = {
+                            tag: existingTexts[i].tag || "",
+                            title: existingTexts[i].title || "",
+                            subtitle: existingTexts[i].subtitle || "",
+                            button_text: existingTexts[i].button_text || "",
+                            category_slug: existingTexts[i].category_slug || "",
+                        };
                     }
                 }
             }

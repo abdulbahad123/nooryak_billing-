@@ -23,7 +23,7 @@
                     objectFit: 'contain',
                     display: 'inline-block',
                 }"
-                :src="nooryakDashboardLogo"
+                :src="appSetting.small_light_logo_url || appSetting.light_logo_url || nooryakDashboardLogo"
             />
         </div>
         <div v-else style="display: flex; align-items: center; justify-content: space-between; padding: 5px 16px 15px 16px;">
@@ -36,7 +36,7 @@
                     objectFit: 'contain',
                     display: 'block',
                 }"
-                :src="nooryakDashboardLogo"
+                :src="appSetting.left_sidebar_theme == 'dark' ? (appSetting.light_logo_url || nooryakDashboardLogo) : (appSetting.dark_logo_url || appSetting.light_logo_url || nooryakDashboardLogo)"
             />
             <CloseOutlined
                 v-if="innerWidth <= 991"

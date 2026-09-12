@@ -373,77 +373,80 @@ export default defineComponent({
             { name: "Groceries", slug: "groceries", image_url: "/uploads/categories/category_3.png" },
         ];
 
+        const defaultBannerConfigs = [
+            {
+                tag: 'UPGRADE YOUR WORLD',
+                title: 'Latest Electronics<br /><span class="highlight-text">For A Smarter You</span>',
+                subtitle: 'Top brands | Great deals | Trusted quality',
+                button_text: 'Shop Now',
+                category_slug: 'electronics'
+            },
+            {
+                tag: 'PREMIUM TECH SHOWCASE',
+                title: 'Next Gen Gadgets & Accessories',
+                subtitle: 'Best prices | Fast shipping | Guaranteed quality',
+                button_text: 'Explore Deals',
+                category_slug: 'electronics'
+            },
+            {
+                tag: 'EXCLUSIVE PROMOTION',
+                title: 'Smart Home & Entertainment Systems',
+                subtitle: 'Transform your lifestyle with modern appliances',
+                button_text: 'Buy Now',
+                category_slug: 'electronics'
+            }
+        ];
+
+        const getSlideConfig = (textConfig, index) => {
+            const fallback = defaultBannerConfigs[index] || defaultBannerConfigs[0];
+            const cfg = textConfig || {};
+            return {
+                tag: (cfg.tag && String(cfg.tag).trim() !== '') ? cfg.tag : fallback.tag,
+                title: (cfg.title && String(cfg.title).trim() !== '') ? cfg.title : fallback.title,
+                subtitle: (cfg.subtitle && String(cfg.subtitle).trim() !== '') ? cfg.subtitle : fallback.subtitle,
+                button_text: (cfg.button_text && String(cfg.button_text).trim() !== '') ? cfg.button_text : fallback.button_text,
+                category_slug: (cfg.category_slug && String(cfg.category_slug).trim() !== '') ? cfg.category_slug : fallback.category_slug,
+            };
+        };
+
         const heroBanners = computed(() => {
             const list = [];
             const bannerTexts = frontSettings.value.top_banners_text || [];
 
             if (frontSettings.value.bottom_banners_1_details && frontSettings.value.bottom_banners_1_details.length) {
-                frontSettings.value.bottom_banners_1_details.forEach((item, idx) => {
-                    const textConfig = bannerTexts[idx] || {};
-                    list.push({
-                        ...item,
-                        tag: textConfig.tag || item.tag,
-                        title: textConfig.title || item.title,
-                        subtitle: textConfig.subtitle || item.subtitle,
-                        button_text: textConfig.button_text || item.button_text,
-                        category_slug: textConfig.category_slug || item.category_slug,
-                    });
+                frontSettings.value.bottom_banners_1_details.forEach((item) => {
+                    const merged = getSlideConfig(bannerTexts[0], 0);
+                    list.push({ ...item, ...merged });
                 });
             }
             if (frontSettings.value.bottom_banners_2_details && frontSettings.value.bottom_banners_2_details.length) {
-                frontSettings.value.bottom_banners_2_details.forEach((item, idx) => {
-                    const indexOffset = list.length;
-                    const textConfig = bannerTexts[indexOffset] || {};
-                    list.push({
-                        ...item,
-                        tag: textConfig.tag || item.tag,
-                        title: textConfig.title || item.title,
-                        subtitle: textConfig.subtitle || item.subtitle,
-                        button_text: textConfig.button_text || item.button_text,
-                        category_slug: textConfig.category_slug || item.category_slug,
-                    });
+                frontSettings.value.bottom_banners_2_details.forEach((item) => {
+                    const merged = getSlideConfig(bannerTexts[1], 1);
+                    list.push({ ...item, ...merged });
                 });
             }
             if (frontSettings.value.bottom_banners_3_details && frontSettings.value.bottom_banners_3_details.length) {
-                frontSettings.value.bottom_banners_3_details.forEach((item, idx) => {
-                    const indexOffset = list.length;
-                    const textConfig = bannerTexts[indexOffset] || {};
-                    list.push({
-                        ...item,
-                        tag: textConfig.tag || item.tag,
-                        title: textConfig.title || item.title,
-                        subtitle: textConfig.subtitle || item.subtitle,
-                        button_text: textConfig.button_text || item.button_text,
-                        category_slug: textConfig.category_slug || item.category_slug,
-                    });
+                frontSettings.value.bottom_banners_3_details.forEach((item) => {
+                    const merged = getSlideConfig(bannerTexts[2], 2);
+                    list.push({ ...item, ...merged });
                 });
             }
             if (frontSettings.value.top_banners_details && frontSettings.value.top_banners_details.length) {
-                frontSettings.value.top_banners_details.forEach((item, idx) => {
+                frontSettings.value.top_banners_details.forEach((item) => {
                     if (!list.some(b => b.url === item.url)) {
-                        const indexOffset = list.length;
-                        const textConfig = bannerTexts[indexOffset] || {};
-                        list.push({
-                            ...item,
-                            tag: textConfig.tag || item.tag,
-                            title: textConfig.title || item.title,
-                            subtitle: textConfig.subtitle || item.subtitle,
-                            button_text: textConfig.button_text || item.button_text,
-                            category_slug: textConfig.category_slug || item.category_slug,
-                        });
+                        const slideIdx = list.length;
+                        const merged = getSlideConfig(bannerTexts[slideIdx], slideIdx);
+                        list.push({ ...item, ...merged });
                     }
                 });
             }
             if (list.length > 0) {
                 return list;
             }
+            const slide0 = getSlideConfig(bannerTexts[0], 0);
             return [{
                 url: '/uploads/banners/hero_banner.png',
-                tag: bannerTexts[0]?.tag || 'UPGRADE YOUR WORLD',
-                title: bannerTexts[0]?.title || 'Latest Electronics<br /><span class="highlight-text">For A Smarter You</span>',
-                subtitle: bannerTexts[0]?.subtitle || 'Top brands | Great deals | Trusted quality',
-                button_text: bannerTexts[0]?.button_text || 'Shop Now',
-                category_slug: bannerTexts[0]?.category_slug || 'electronics',
+                ...slide0,
             }];
         });
 

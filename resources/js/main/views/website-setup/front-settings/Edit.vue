@@ -196,6 +196,7 @@ export default defineComponent({
                     });
 
                     rules.value = {};
+                    setUrlData();
                 },
                 error: (errorRules) => {
                     rules.value = errorRules;
