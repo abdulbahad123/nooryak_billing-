@@ -465,15 +465,16 @@ export default {
 
 @media (max-width: 640px) {
     .product-top {
-        height: 140px;
-        padding: 10px;
+        height: 135px;
+        padding: 8px;
     }
     .product-bottom {
-        padding: 10px;
+        padding: 8px;
     }
     .product-title {
         font-size: 12px;
         height: 32px;
+        line-height: 1.3;
     }
     .current-price-text {
         font-size: 13px !important;
@@ -481,9 +482,31 @@ export default {
     .mrp-price-text {
         font-size: 10px !important;
     }
+    .card-discount-tag {
+        font-size: 9px !important;
+        padding: 1px 4px !important;
+    }
     .card-add-btn {
-        height: 34px !important;
-        font-size: 12px !important;
+        height: 32px !important;
+        font-size: 11px !important;
+        padding: 0 4px;
+    }
+    .card-qty-group {
+        height: 32px !important;
+        .qty-card-btn {
+            width: 28px !important;
+            font-size: 12px !important;
+        }
+        .qty-card-val {
+            font-size: 12px !important;
+        }
+    }
+    .card-wishlist-btn {
+        width: 26px;
+        height: 26px;
+        font-size: 12px;
+        top: 6px;
+        right: 6px;
     }
 }
 </style>

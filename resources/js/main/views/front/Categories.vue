@@ -1,8 +1,8 @@
 <template>
 	<div class="bg-white">
 		<a-row type="flex" justify="center">
-			<a-col :span="20">
-				<a-row :gutter="[30, 30]" class="mt-30">
+			<a-col :xs="23" :sm="22" :md="22" :lg="20" :xl="20">
+				<a-row :gutter="[16, 16]" class="mt-30">
 					<a-col
 						:xs="24"
 						:sm="24"
@@ -55,7 +55,7 @@
 								<a-divider class="mt-0" />
 
 								<!-- Shimmer Loading Placeholder -->
-								<a-row :gutter="[20, 20]" v-if="loading">
+								<a-row :gutter="[10, 10]" v-if="loading">
 									<a-col
 										v-for="i in 8"
 										:key="i"
@@ -71,7 +71,7 @@
 
 								<!-- Actual Products Grid -->
 								<a-row
-									:gutter="[20, 20]"
+									:gutter="[10, 10]"
 									v-else-if="products && products.length > 0"
 								>
 									<a-col

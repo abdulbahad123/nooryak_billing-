@@ -16,6 +16,17 @@
 				<template #title>{{ category.name }}</template>
 				<CategoryMenu :categories="category.children" />
 			</a-sub-menu>
+			<a-menu-item v-else :key="category.xid">
+				<router-link
+					:to="{
+						name: 'front.categories',
+						params: { warehouse: frontWarehouse.slug, slug: [category.slug] },
+					}"
+				>
+					<a-avatar :size="16" :src="category.image_url" />
+					{{ category.name }}
+				</router-link>
+			</a-menu-item>
 		</template>
 	</a-menu>
 </template>
@@ -29,6 +40,7 @@ import {
 } from "@ant-design/icons-vue";
 import { sortBy } from "lodash-es";
 import CategoryMenu from "./CategroyMenu.vue";
+import common from "../../../../common/composable/common";
 
 export default defineComponent({
 	props: ["catSelectedKeys", "catOpenKeys"],
@@ -102,10 +114,13 @@ export default defineComponent({
 			openKeys.value = parentIds;
 		});
 
+		const { frontWarehouse } = common();
+
 		return {
 			selectedKeys,
 			openKeys,
 			allCategories,
+			frontWarehouse,
 		};
 	},
 });
