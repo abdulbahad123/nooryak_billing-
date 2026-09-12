@@ -13,7 +13,7 @@
                     <FileUploader
                         key="bottom_banners_1"
                         :fileUrls="data.bottom_banners_1_details"
-                        :fileNames="formData.bottom_banners_1"
+                        :fileNames="addEditForm.formData.bottom_banners_1"
                         @uploadSuccess="bottomBanner1UploadSuccess"
                     />
                 </a-col>
@@ -53,7 +53,7 @@
                     <FileUploader
                         key="bottom_banners_2"
                         :fileUrls="data.bottom_banners_2_details"
-                        :fileNames="formData.bottom_banners_2"
+                        :fileNames="addEditForm.formData.bottom_banners_2"
                         @uploadSuccess="bottomBanner2UploadSuccess"
                     />
                 </a-col>
@@ -93,7 +93,7 @@
                     <FileUploader
                         key="bottom_banners_3"
                         :fileUrls="data.bottom_banners_3_details"
-                        :fileNames="formData.bottom_banners_3"
+                        :fileNames="addEditForm.formData.bottom_banners_3"
                         @uploadSuccess="bottomBanner3UploadSuccess"
                     />
                 </a-col>
@@ -132,7 +132,7 @@
                     <FileUploader
                         key="top_banners_details"
                         :fileUrls="data.top_banners_details"
-                        :fileNames="formData.top_banners"
+                        :fileNames="addEditForm.formData.top_banners"
                         @uploadSuccess="topBannerUploadSuccess"
                     />
                 </a-col>
