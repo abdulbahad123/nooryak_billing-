@@ -14,6 +14,7 @@ use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\FrontProductCard;
 use App\Models\FrontWebsiteSettings;
+use App\Models\Product;
 use App\Models\UserDetails;
 use App\Models\Warehouse;
 use App\Scopes\CompanyScope;
@@ -221,6 +222,71 @@ class HomePageController extends ApiBaseController
 
         return ApiResponse::make('Data Fetched', [
             'category' => $category
+        ]);
+    }
+
+    public function productDetails($storeSlug, $id)
+    {
+        $warehouse = Warehouse::withoutGlobalScope(CompanyScope::class)->where('slug', $storeSlug)->first();
+
+        if (!$warehouse) {
+            throw new ApiException("Not a valid warehouse");
+        }
+
+        $company = Company::find($warehouse->company_id);
+        $currency = Currency::withoutGlobalScope(CompanyScope::class)->find($company->currency_id);
+
+        $productId = Common::getIdFromHash($id);
+        if (!$productId && is_numeric($id)) {
+            $productId = (int) $id;
+        }
+
+        $product = Product::withoutGlobalScope(CompanyScope::class)
+            ->withoutGlobalScope('current_warehouse')
+            ->with([
+                'category:id,name,slug,image',
+                'brand:id,name,slug,image',
+                'unit:id,name,short_name',
+                'details:id,product_id,sales_price,mrp,purchase_price,sales_tax_type,tax_id,current_stock,wholesale_price,wholesale_quantity',
+                'details.tax:id,rate,name',
+                'variations',
+                'variations.variation',
+                'variations.variationType',
+                'variations.details',
+                'customFields'
+            ])
+            ->where(function ($query) use ($productId, $id) {
+                if ($productId) {
+                    $query->where('products.id', $productId);
+                }
+                $query->orWhere('products.slug', $id);
+            })
+            ->first();
+
+        if (!$product) {
+            throw new ApiException("Product not found");
+        }
+
+        $relatedProducts = Product::withoutGlobalScope(CompanyScope::class)
+            ->withoutGlobalScope('current_warehouse')
+            ->select('id', 'name', 'slug', 'image', 'description', 'brand_id', 'category_id')
+            ->with([
+                'details:id,product_id,sales_price,mrp,tax_id,sales_tax_type,current_stock',
+                'details.tax:id,rate',
+                'brand:id,name,slug,image',
+                'category:id,name,slug,image'
+            ])
+            ->where('products.id', '!=', $product->id)
+            ->whereHas('details', function ($q) use ($warehouse) {
+                $q->where('warehouse_id', $warehouse->id);
+            })
+            ->limit(8)
+            ->get();
+
+        return ApiResponse::make('Product fetched successfully', [
+            'product' => $product,
+            'related_products' => $relatedProducts,
+            'currency' => $currency
         ]);
     }
 }

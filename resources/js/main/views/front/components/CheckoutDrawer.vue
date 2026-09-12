@@ -115,7 +115,6 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const store = useStore();
-        const visible = ref(false);
         const router = useRouter();
         const {
             products,
@@ -126,9 +125,13 @@ export default defineComponent({
             frontWarehouse,
         } = cart();
 
-        const showDrawer = () => (visible.value = true);
+        const visible = computed({
+            get: () => store.state.front.cartDrawerVisible,
+            set: (val) => store.commit("front/updateCartDrawerVisible", val)
+        });
 
-        const closeDrawer = () => (visible.value = false);
+        const showDrawer = () => store.commit("front/updateCartDrawerVisible", true);
+        const closeDrawer = () => store.commit("front/updateCartDrawerVisible", false);
 
         const isLoggedIn = computed(() => {
             return store.getters["front/isLoggedIn"];

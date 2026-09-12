@@ -54,13 +54,29 @@
 								</a-page-header>
 								<a-divider class="mt-0" />
 
+								<!-- Shimmer Loading Placeholder -->
+								<a-row :gutter="[20, 20]" v-if="loading">
+									<a-col
+										v-for="i in 8"
+										:key="i"
+										:xs="12"
+										:sm="12"
+										:md="8"
+										:lg="6"
+										:xl="6"
+									>
+										<ProductCardSkeleton />
+									</a-col>
+								</a-row>
+
+								<!-- Actual Products Grid -->
 								<a-row
-									:gutter="[30, 30]"
-									v-if="products && products.length > 0"
+									:gutter="[20, 20]"
+									v-else-if="products && products.length > 0"
 								>
 									<a-col
 										v-for="product in products"
-										:xs="24"
+										:xs="12"
 										:sm="12"
 										:md="8"
 										:lg="6"
@@ -83,7 +99,7 @@
 								<a-row
 									:gutter="30"
 									class="mt-30 mb-30"
-									v-if="products && products.length > 0"
+									v-if="products && products.length > 0 && !loading"
 								>
 									<a-col :span="24">
 										<a-pagination
@@ -104,14 +120,16 @@
 	</div>
 </template>
 <script>
-import { defineComponent, ref, onMounted, watch, computed } from "vue";
+import { defineComponent, ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import LeftSidebarMenu from "./layouts/LeftSidebarMenu.vue";
 import ProductCard from "./components/ProductCard.vue";
+import ProductCardSkeleton from "./components/ProductCardSkeleton.vue";
 
 export default defineComponent({
-	components: { LeftSidebarMenu, ProductCard },
+	components: { LeftSidebarMenu, ProductCard, ProductCardSkeleton },
 	setup() {
+		const loading = ref(true);
 		const categoriesSelectedKeys = ref([]);
 		const categoriesOpenKeys = ref([]);
 		const products = ref([]);
@@ -128,6 +146,7 @@ export default defineComponent({
 		});
 
 		const getData = (params) => {
+			loading.value = true;
 			if (params && params.slug) {
 				const slugParamsArray = params.slug;
 				const categorySlug = slugParamsArray[slugParamsArray.length - 1];
@@ -139,6 +158,9 @@ export default defineComponent({
 						getProducts(category.value.id);
 
 						catSelectedKeys.value = [category.value.id];
+					})
+					.catch(() => {
+						loading.value = false;
 					});
 			} else {
 				catSelectedKeys.value = [];
@@ -163,6 +185,9 @@ export default defineComponent({
 			axiosFront.get(url).then((response) => {
 				totalRecords.value = response.meta.paging.total;
 				products.value = response.data;
+				loading.value = false;
+			}).catch(() => {
+				loading.value = false;
 			});
 		};
 
@@ -178,6 +203,7 @@ export default defineComponent({
 		});
 
 		return {
+			loading,
 			catSelectedKeys,
 			category,
 			categoriesSelectedKeys,

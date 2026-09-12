@@ -36,31 +36,94 @@
                     </a-form-item>
                 </a-col>
             </a-row>
-            <a-row :gutter="16">
-                <a-col :xs="24" :sm="24" :md="8" :lg="8">
-                    <a-row :gutter="16">
-                        <a-col :span="24">
-                            <a-form-item
-                                :label="$t('product.image')"
-                                name="image"
-                                :help="rules.image ? rules.image.message : null"
-                                :validateStatus="rules.image ? 'error' : null"
-                            >
-                                <Upload
-                                    :formData="formData"
-                                    folder="product"
-                                    @onFileUploaded="
-                                        (file) => {
-                                            formData.image = file.file;
-                                            formData.image_url = file.file_url;
-                                        }
-                                    "
-                                />
-                            </a-form-item>
-                        </a-col>
-                    </a-row>
+
+            <form-item-heading>
+                Product Gallery Images (Upload up to 5 Images for Product Detail Slider)
+            </form-item-heading>
+            <a-row :gutter="16" style="margin-bottom: 20px;">
+                <a-col :xs="12" :sm="8" :md="4" :lg="4">
+                    <a-form-item
+                        label="Main Image"
+                        name="image"
+                        :help="rules.image ? rules.image.message : null"
+                        :validateStatus="rules.image ? 'error' : null"
+                    >
+                        <Upload
+                            :formData="formData"
+                            folder="product"
+                            @onFileUploaded="
+                                (file) => {
+                                    formData.image = file.file;
+                                    formData.image_url = file.file_url;
+                                }
+                            "
+                        />
+                    </a-form-item>
                 </a-col>
-                <a-col :xs="24" :sm="24" :md="16" :lg="16">
+                <a-col :xs="12" :sm="8" :md="5" :lg="5">
+                    <a-form-item label="Image 2">
+                        <Upload
+                            :formData="galleryData.img2"
+                            folder="product"
+                            @onFileUploaded="
+                                (file) => {
+                                    galleryData.img2.image = file.file;
+                                    galleryData.img2.image_url = file.file_url;
+                                    customFieldsData['gallery_image_2'] = file.file_url;
+                                }
+                            "
+                        />
+                    </a-form-item>
+                </a-col>
+                <a-col :xs="12" :sm="8" :md="5" :lg="5">
+                    <a-form-item label="Image 3">
+                        <Upload
+                            :formData="galleryData.img3"
+                            folder="product"
+                            @onFileUploaded="
+                                (file) => {
+                                    galleryData.img3.image = file.file;
+                                    galleryData.img3.image_url = file.file_url;
+                                    customFieldsData['gallery_image_3'] = file.file_url;
+                                }
+                            "
+                        />
+                    </a-form-item>
+                </a-col>
+                <a-col :xs="12" :sm="8" :md="5" :lg="5">
+                    <a-form-item label="Image 4">
+                        <Upload
+                            :formData="galleryData.img4"
+                            folder="product"
+                            @onFileUploaded="
+                                (file) => {
+                                    galleryData.img4.image = file.file;
+                                    galleryData.img4.image_url = file.file_url;
+                                    customFieldsData['gallery_image_4'] = file.file_url;
+                                }
+                            "
+                        />
+                    </a-form-item>
+                </a-col>
+                <a-col :xs="12" :sm="8" :md="5" :lg="5">
+                    <a-form-item label="Image 5">
+                        <Upload
+                            :formData="galleryData.img5"
+                            folder="product"
+                            @onFileUploaded="
+                                (file) => {
+                                    galleryData.img5.image = file.file;
+                                    galleryData.img5.image_url = file.file_url;
+                                    customFieldsData['gallery_image_5'] = file.file_url;
+                                }
+                            "
+                        />
+                    </a-form-item>
+                </a-col>
+            </a-row>
+
+            <a-row :gutter="16">
+                <a-col :xs="24" :sm="24" :md="24" :lg="24">
                     <a-row :gutter="16">
                         <a-col :xs="24" :sm="24" :md="24" :lg="24">
                             <a-form-item
@@ -797,6 +860,12 @@ export default defineComponent({
         const customFields = ref([]);
         const warehouses = ref([]);
         const customFieldsData = ref({});
+        const galleryData = ref({
+            img2: { image: undefined, image_url: undefined },
+            img3: { image: undefined, image_url: undefined },
+            img4: { image: undefined, image_url: undefined },
+            img5: { image: undefined, image_url: undefined },
+        });
         const selectedUnit = ref({});
         const store = useStore();
         const brandsUrl = "brands?limit=10000";
@@ -1102,6 +1171,7 @@ export default defineComponent({
             forEach(customFields.value, (customField) => {
                 if (
                     props.addEditType == "add" ||
+                    !props.formData.custom_fields ||
                     props.formData.custom_fields.length == 0
                 ) {
                     newFields[customField.name] = "";
@@ -1114,6 +1184,33 @@ export default defineComponent({
                         searchedField === undefined ? "" : searchedField.field_value;
                 }
             });
+
+            // Populate Product Gallery Images (2-5)
+            const getCustomVal = (key) => {
+                if (props.formData && props.formData.custom_fields && Array.isArray(props.formData.custom_fields)) {
+                    const found = find(props.formData.custom_fields, ["field_name", key]);
+                    return found ? found.field_value : undefined;
+                }
+                return undefined;
+            };
+
+            const g2 = getCustomVal('gallery_image_2');
+            const g3 = getCustomVal('gallery_image_3');
+            const g4 = getCustomVal('gallery_image_4');
+            const g5 = getCustomVal('gallery_image_5');
+
+            galleryData.value = {
+                img2: { image: g2, image_url: g2 },
+                img3: { image: g3, image_url: g3 },
+                img4: { image: g4, image_url: g4 },
+                img5: { image: g5, image_url: g5 },
+            };
+
+            if (g2) newFields['gallery_image_2'] = g2;
+            if (g3) newFields['gallery_image_3'] = g3;
+            if (g4) newFields['gallery_image_4'] = g4;
+            if (g5) newFields['gallery_image_5'] = g5;
+
             customFieldsData.value = { ...newFields };
 
             selectedUnit.value = find(units.value, ["xid", props.formData.unit_id]);
@@ -1157,6 +1254,7 @@ export default defineComponent({
 
             customFields,
             customFieldsData,
+            galleryData,
             taxTypes,
             barcodeSymbology,
             selectedUnit,

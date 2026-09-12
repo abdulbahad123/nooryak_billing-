@@ -24,6 +24,16 @@ let routesArray = [
                 },
             },
             {
+                path: "/store/:warehouse/product/:id",
+                component: () => import("../views/front/ProductDetails.vue"),
+                name: "front.product.details",
+                meta: {
+                    isFrontStore: true,
+                    requireUnauth: true,
+                    menuKey: "homepage",
+                },
+            },
+            {
                 path: "/store/:warehouse/dashboard",
                 component: () =>
                     import("../views/front/dashboard/Dashboard.vue"),

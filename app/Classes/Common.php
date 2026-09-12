@@ -578,9 +578,9 @@ class Common
     {
         if ($hash != "") {
             $convertedId = Hashids::decode($hash);
-            $id = $convertedId[0];
-
-            return $id;
+            if (!empty($convertedId) && isset($convertedId[0])) {
+                return $convertedId[0];
+            }
         }
 
         return $hash;

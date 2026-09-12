@@ -84,10 +84,13 @@
                                     <li
                                         v-for="(
                                             item, index
-                                        ) in frontAppSetting.links_widget"
+                                        ) in usefulNavLinks"
                                         :key="index"
                                     >
-                                        <a :href="item.value" target="_blank">
+                                        <router-link v-if="item.route" :to="item.route">
+                                            {{ item.title }}
+                                        </router-link>
+                                        <a v-else :href="item.value" target="_blank">
                                             {{ item.title }}
                                         </a>
                                     </li>
@@ -101,10 +104,13 @@
                                     <li
                                         v-for="(
                                             item, index
-                                        ) in frontAppSetting.pages_widget"
+                                        ) in pagesNavLinks"
                                         :key="index"
                                     >
-                                        <a :href="item.value" target="_blank">
+                                        <router-link v-if="item.route" :to="item.route">
+                                            {{ item.title }}
+                                        </router-link>
+                                        <a v-else :href="item.value" target="_blank">
                                             {{ item.title }}
                                         </a>
                                     </li>
@@ -144,6 +150,7 @@
 </template>
 
 <script>
+import { computed } from "vue";
 import {
     FacebookFilled,
     TwitterCircleFilled,
@@ -167,10 +174,38 @@ export default {
     setup() {
         const { formatAmountCurrency, frontAppSetting, frontWarehouse } = cart();
 
+        const usefulNavLinks = computed(() => {
+            if (frontWarehouse.value && frontWarehouse.value.slug) {
+                const slug = frontWarehouse.value.slug;
+                return [
+                    { title: "Mobiles", route: { name: "front.categories", params: { warehouse: slug, slug: ["mobiles"] } } },
+                    { title: "Electronics", route: { name: "front.categories", params: { warehouse: slug, slug: ["electronics"] } } },
+                    { title: "Computers & Laptops", route: { name: "front.categories", params: { warehouse: slug, slug: ["desktops"] } } },
+                    { title: "TV & Appliances", route: { name: "front.categories", params: { warehouse: slug, slug: ["televisions"] } } },
+                    { title: "Home & Furniture", route: { name: "front.categories", params: { warehouse: slug, slug: ["furniture"] } } },
+                ];
+            }
+            return frontAppSetting.value && frontAppSetting.value.links_widget ? frontAppSetting.value.links_widget : [];
+        });
+
+        const pagesNavLinks = computed(() => {
+            if (frontWarehouse.value && frontWarehouse.value.slug) {
+                const slug = frontWarehouse.value.slug;
+                return [
+                    { title: "Shop All Categories", route: { name: "front.categories", params: { warehouse: slug } } },
+                    { title: "My Account", route: { name: "front.dashboard", params: { warehouse: slug } } },
+                    { title: "My Orders", route: { name: "front.orders", params: { warehouse: slug } } },
+                ];
+            }
+            return frontAppSetting.value && frontAppSetting.value.pages_widget ? frontAppSetting.value.pages_widget : [];
+        });
+
         return {
             frontAppSetting,
             formatAmountCurrency,
             frontWarehouse,
+            usefulNavLinks,
+            pagesNavLinks,
         };
     },
 };

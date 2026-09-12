@@ -3,6 +3,7 @@ import { forEach } from "lodash-es";
 import router from '../router';
 
 const CART_ITEMS = 'cart_items';
+const WISHLIST_ITEMS = 'wishlist_items';
 const AUTH_USER = 'front_auth_user';
 const AUTH_TOKEN = 'front_auth_token';
 const EXIPRES_KEY = 'front_expire_key';
@@ -28,6 +29,9 @@ export default {
             token: window.localStorage.getItem(AUTH_TOKEN) || null,
             expires: window.localStorage.getItem(EXIPRES_KEY) || null,
             cartItems: getJSONFromLocalStorage(CART_ITEMS) || {},
+            wishlistItems: getJSONFromLocalStorage(WISHLIST_ITEMS) || {},
+            cartDrawerVisible: false,
+            wishlistDrawerVisible: false,
             warehouseSlug: "",
             warehouseCurrency: {}
         }
@@ -63,6 +67,44 @@ export default {
         updateWarehouseSlug(state, slug) {
             state.warehouseSlug = slug;
         },
+        updateCartDrawerVisible(state, visible) {
+            state.cartDrawerVisible = visible;
+        },
+        updateWishlistDrawerVisible(state, visible) {
+            state.wishlistDrawerVisible = visible;
+        },
+        toggleWishlistItem(state, item) {
+            if (!state.wishlistItems[state.warehouseSlug]) {
+                state.wishlistItems[state.warehouseSlug] = [];
+            }
+            const currentList = [...state.wishlistItems[state.warehouseSlug]];
+            const existingIndex = currentList.findIndex(
+                i => (i.xid && i.xid === item.xid) || (i.id && i.id === item.id)
+            );
+
+            if (existingIndex > -1) {
+                currentList.splice(existingIndex, 1);
+            } else {
+                currentList.push(item);
+            }
+            state.wishlistItems = {
+                ...state.wishlistItems,
+                [state.warehouseSlug]: currentList
+            };
+            window.localStorage.setItem(WISHLIST_ITEMS, JSON.stringify(state.wishlistItems));
+        },
+        removeWishlistItem(state, itemKey) {
+            if (state.wishlistItems[state.warehouseSlug]) {
+                const updated = state.wishlistItems[state.warehouseSlug].filter(
+                    i => i.xid !== itemKey && i.id !== itemKey
+                );
+                state.wishlistItems = {
+                    ...state.wishlistItems,
+                    [state.warehouseSlug]: updated
+                };
+                window.localStorage.setItem(WISHLIST_ITEMS, JSON.stringify(state.wishlistItems));
+            }
+        }
     },
 
     actions: {
@@ -140,6 +182,18 @@ export default {
         },
         storeCartItems: (state) => {
             return state.cartItems && state.cartItems[state.warehouseSlug] ? state.cartItems[state.warehouseSlug] : [];
+        },
+        cartDrawerVisible: (state) => state.cartDrawerVisible,
+        wishlistDrawerVisible: (state) => state.wishlistDrawerVisible,
+        storeWishlistItems: (state) => {
+            return state.wishlistItems && state.wishlistItems[state.warehouseSlug] ? state.wishlistItems[state.warehouseSlug] : [];
+        },
+        totalWishlistItems: (state) => {
+            return state.wishlistItems && state.wishlistItems[state.warehouseSlug] ? state.wishlistItems[state.warehouseSlug].length : 0;
+        },
+        isWishlisted: (state) => (itemKey) => {
+            if (!state.wishlistItems || !state.wishlistItems[state.warehouseSlug]) return false;
+            return state.wishlistItems[state.warehouseSlug].some(i => i.xid === itemKey || i.id === itemKey);
         }
     }
 }

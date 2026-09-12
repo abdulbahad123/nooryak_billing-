@@ -1,21 +1,4 @@
 <template>
-    <a-button v-if="isLoggedIn" type="link">
-        <router-link
-            :to="{ name: 'front.dashboard', params: { warehouse: frontWarehouse.slug } }"
-        >
-            <a-avatar :src="user.profile_image_url" :size="28" />
-        </router-link>
-    </a-button>
-    <a-button type="link" @click="showLogin" v-else>
-        <user-outlined
-            :style="{
-                fontSize: '24px',
-                color: '#fff',
-                verticalAlign: 'top',
-            }"
-        />
-    </a-button>
-
     <a-modal
         v-model:open="visible"
         centered
