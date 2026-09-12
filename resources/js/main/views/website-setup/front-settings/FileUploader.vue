@@ -55,11 +55,31 @@ export default defineComponent({
         const fileArrayWithUid = ref([]);
         const loading = ref(false);
 
+        const initFiles = () => {
+            fileList.value = Array.isArray(props.fileUrls) ? [...props.fileUrls] : [];
+            fileArray.value = Array.isArray(props.fileNames) ? [...props.fileNames] : [];
+            fileArrayWithUid.value = Array.isArray(props.fileUrls) ? [...props.fileUrls] : [];
+        };
+
         onMounted(() => {
-            fileList.value = [...props.fileUrls];
-            fileArray.value = [...props.fileNames];
-            fileArrayWithUid.value = [...props.fileUrls];
+            initFiles();
         });
+
+        watch(
+            () => props.fileUrls,
+            () => {
+                initFiles();
+            },
+            { deep: true }
+        );
+
+        watch(
+            () => props.fileNames,
+            () => {
+                initFiles();
+            },
+            { deep: true }
+        );
 
         const handleCancel = () => {
             previewVisible.value = false;

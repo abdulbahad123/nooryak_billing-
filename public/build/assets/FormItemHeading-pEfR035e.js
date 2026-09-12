@@ -1,0 +1,1 @@
+import{_ as a,c as s,o as r,a as n,g as l,w as c,S as p,T as _,z as m}from"./app-BoT9lc8t.js";const d={};function i(t,e,f,u,g,$){const o=_;return r(),s(m,null,[n(o,{level:5},{default:c(()=>[p(t.$slots,"default")]),_:3}),e[0]||(e[0]=l("hr",{style:{"margin-bottom":"20px"}},null,-1))],64)}const y=a(d,[["render",i]]);export{y as F};
