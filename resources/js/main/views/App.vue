@@ -50,15 +50,7 @@ export default {
         const appChecking = computed(() => store.state.auth.appChecking);
 
         onMounted(() => {
-            // if (
-            //     router.currentRoute &&
-            //     router.currentRoute.value &&
-            //     router.currentRoute.value.meta.isFrontStore == undefined
-            // ) {
-            //     setInterval(() => {
-            //         store.dispatch("auth/refreshToken");
-            //     }, 5 * 60 * 1000);
-            // }
+            store.commit("auth/updateAppChecking", false);
         });
 
         watch(route, (newVal, oldVal) => {

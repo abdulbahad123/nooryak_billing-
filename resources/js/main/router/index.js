@@ -147,11 +147,16 @@ const checkLogFog = (to, from, next) => {
 };
 
 router.beforeEach((to, from, next) => {
+    store.commit('auth/updateAppChecking', false);
     if (to.meta && to.meta.appModule && !includes(allActiveModules, to.meta.appModule)) {
         next({ name: 'admin.dashboard.index' });
         return;
     }
     checkLogFog(to, from, next);
+});
+
+router.afterEach(() => {
+    store.commit('auth/updateAppChecking', false);
 });
 
 export default router;
