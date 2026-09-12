@@ -209,7 +209,7 @@ export default defineComponent({
             window.addEventListener("resize", onResize);
 
             axiosFront
-                .get("front/categories")
+                .post("front/categories")
                 .then((response) => {
                     if (response.data && response.data.categories && response.data.categories.length) {
                         categories.value = response.data.categories;

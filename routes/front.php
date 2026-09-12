@@ -6,6 +6,7 @@ use Examyou\RestAPI\Facades\ApiRoute;
 ApiRoute::group(['prefix' => 'front', 'namespace' => 'App\Http\Controllers\Api\Front'], function () {
     ApiRoute::get('app/{warehouse}', ['as' => 'api.front.app', 'uses' => 'HomePageController@app']);
     ApiRoute::get('homepage/{warehouse}', ['as' => 'api.front.homepage', 'uses' => 'HomePageController@homepage']);
+    ApiRoute::get('categories', ['as' => 'api.front.categories.get', 'uses' => 'HomePageController@categories']);
     ApiRoute::post('categories', ['as' => 'api.front.categories', 'uses' => 'HomePageController@categories']);
     ApiRoute::post('category-by-slug/{slug}', ['as' => 'api.front.category-by-slug', 'uses' => 'HomePageController@categoryBySlug']);
     ApiRoute::get('product-details/{warehouse}/{id}', ['as' => 'api.front.product-details', 'uses' => 'HomePageController@productDetails']);

@@ -93,7 +93,7 @@
                                 Shop Now <right-outlined />
                             </router-link>
                         </div>
-                        <img :src="(frontSettings.bottom_banners_1_details && frontSettings.bottom_banners_1_details[0]) ? frontSettings.bottom_banners_1_details[0].url : '/uploads/banners/Hero_banner.png'" alt="Mobile Fest" class="offer-card-img" />
+                        <img :src="(frontSettings.bottom_banners_1_details && frontSettings.bottom_banners_1_details[0]) ? frontSettings.bottom_banners_1_details[0].url : '/uploads/banners/hero_banner.png'" alt="Mobile Fest" class="offer-card-img" />
                     </div>
 
                     <!-- Card 2: Laptops -->
@@ -398,7 +398,7 @@ export default defineComponent({
             if (list.length > 0) {
                 return list;
             }
-            return [{ url: '/uploads/banners/Hero_banner.png' }];
+            return [{ url: '/uploads/banners/hero_banner.png' }];
         });
 
         onMounted(() => {
