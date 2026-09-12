@@ -220,9 +220,39 @@ class HomePageController extends ApiBaseController
         $slug = $request->slug;
         $category = Category::select('id', 'name', 'slug')->where('slug', $slug)->first();
 
+        if ($category) {
+            $allCategories = Category::all();
+            $childIds = $this->getAllChildCategoryIds($category->id, $allCategories);
+            $allCategoryIds = array_merge([$category->id], $childIds);
+
+            $categoryXids = [];
+            foreach ($allCategoryIds as $catId) {
+                $categoryXids[] = Hashids::encode($catId);
+            }
+
+            return ApiResponse::make('Data Fetched', [
+                'category' => $category,
+                'category_xids' => $categoryXids,
+            ]);
+        }
+
         return ApiResponse::make('Data Fetched', [
-            'category' => $category
+            'category' => null,
+            'category_xids' => [],
         ]);
+    }
+
+    private function getAllChildCategoryIds($parentId, $allCategories)
+    {
+        $childIds = [];
+        foreach ($allCategories as $cat) {
+            $rawParentId = $cat->getRawOriginal('parent_id');
+            if ($rawParentId == $parentId) {
+                $childIds[] = $cat->id;
+                $childIds = array_merge($childIds, $this->getAllChildCategoryIds($cat->id, $allCategories));
+            }
+        }
+        return $childIds;
     }
 
     public function productDetails($storeSlug, $id)

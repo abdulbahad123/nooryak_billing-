@@ -140,6 +140,8 @@ export default defineComponent({
 		const currentPage = ref(1);
 		const pageSize = ref(20);
 
+		const categoryXids = ref([]);
+
 		onMounted(() => {
 			const params = route.params;
 			getData(params);
@@ -147,24 +149,42 @@ export default defineComponent({
 
 		const getData = (params) => {
 			loading.value = true;
+			currentPage.value = 1;
+
 			if (params && params.slug) {
 				const slugParamsArray = params.slug;
-				const categorySlug = slugParamsArray[slugParamsArray.length - 1];
+				const categorySlug = Array.isArray(slugParamsArray)
+					? slugParamsArray[slugParamsArray.length - 1]
+					: slugParamsArray;
 
-				axiosFront
-					.post(`/front/category-by-slug/${categorySlug}`)
-					.then((response) => {
-						category.value = response.data.category;
-						getProducts(category.value.id);
+				if (categorySlug === "all") {
+					catSelectedKeys.value = [];
+					category.value = {};
+					categoryXids.value = [];
+					getProducts();
+				} else {
+					axiosFront
+						.post(`/front/category-by-slug/${categorySlug}`)
+						.then((response) => {
+							category.value = response.data.category || {};
+							categoryXids.value = response.data.category_xids || [];
 
-						catSelectedKeys.value = [category.value.id];
-					})
-					.catch(() => {
-						loading.value = false;
-					});
+							if (category.value && category.value.xid) {
+								catSelectedKeys.value = [category.value.xid];
+							} else {
+								catSelectedKeys.value = [];
+							}
+
+							getProducts();
+						})
+						.catch(() => {
+							loading.value = false;
+						});
+				}
 			} else {
 				catSelectedKeys.value = [];
 				category.value = {};
+				categoryXids.value = [];
 				getProducts();
 			}
 		};
@@ -172,9 +192,13 @@ export default defineComponent({
 		const getProducts = () => {
 			let url =
 				"products?fields=id,xid,name,slug,image,image_url,description,category_id,x_category_id,category{id,xid,name,slug},brand_id,x_brand_id,brand{id,xid,name,slug},unit_id,x_unit_id,unit{id,xid,name,short_name},description,details{stock_quantitiy_alert,opening_stock,opening_stock_date,wholesale_price,wholesale_quantity,mrp,purchase_price,sales_price,tax_id,x_tax_id,purchase_tax_type,sales_tax_type,current_stock,warehouse_id,x_warehouse_id,status},details:tax{id,xid,name,rate}";
-			if (category.value && category.value.id) {
-				const categoryId = category.value.id;
-				url += `&filters=category_id eq ${categoryId}`;
+
+			if (categoryXids.value && categoryXids.value.length > 0) {
+				const filterParts = categoryXids.value.map((xid) => `category_id eq "${xid}"`);
+				const filterString = `(${filterParts.join(" or ")})`;
+				const hashableString = categoryXids.value.join(",");
+
+				url += `&filters=${encodeURIComponent(filterString)}&hashable=${hashableString}`;
 			}
 
 			const limit = pageSize.value;
@@ -182,13 +206,16 @@ export default defineComponent({
 
 			url += `&offset=${offset}&limit=${limit}`;
 
-			axiosFront.get(url).then((response) => {
-				totalRecords.value = response.meta.paging.total;
-				products.value = response.data;
-				loading.value = false;
-			}).catch(() => {
-				loading.value = false;
-			});
+			axiosFront
+				.get(url)
+				.then((response) => {
+					totalRecords.value = response.meta.paging.total;
+					products.value = response.data;
+					loading.value = false;
+				})
+				.catch(() => {
+					loading.value = false;
+				});
 		};
 
 		const paginationClicked = (page, perPage) => {
