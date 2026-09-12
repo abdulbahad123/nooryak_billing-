@@ -107,12 +107,12 @@
             </div>
         </header>
 
-        <!-- Secondary Category Navigation Strip -->
+        <!-- Secondary Category Navigation Strip (6 Categories Limit) -->
         <nav class="subheader-cat-nav">
             <div class="subheader-wrapper">
                 <div class="cat-links-scroll">
                     <router-link
-                        v-for="cat in (categories && categories.length ? categories : defaultNavCategories)"
+                        v-for="cat in (categories && categories.length ? categories.slice(0, 6) : defaultNavCategories.slice(0, 6))"
                         :key="cat.id || cat.slug"
                         :to="{ name: 'front.categories', params: { warehouse: frontWarehouse.slug, slug: [cat.slug] } }"
                         class="cat-nav-link"

@@ -3,31 +3,21 @@
         <div class="home-wrapper">
             <!-- 1. Hero Banner Slider Section -->
             <section class="hero-banner-section">
-                <a-carousel autoplay arrows class="hero-carousel">
-                    <template #prevArrow>
-                        <div class="custom-slick-arrow slick-prev-btn">
-                            <left-outlined />
-                        </div>
-                    </template>
-                    <template #nextArrow>
-                        <div class="custom-slick-arrow slick-next-btn">
-                            <right-outlined />
-                        </div>
-                    </template>
-
+                <a-carousel autoplay :arrows="false" class="hero-carousel">
                     <div
                         v-for="(banner, index) in heroBanners"
                         :key="index"
                         class="hero-slide"
                     >
                         <div class="hero-card">
-                            <!-- Left Side: Content -->
+                            <!-- Left Side: Dynamic Content from Dashboard -->
                             <div class="hero-left-content">
-                                <span class="hero-tag">Upgrade Your World</span>
-                                <h1 class="hero-title">Latest Electronics<br /><span class="highlight-text">For A Smarter You</span></h1>
-                                <p class="hero-sub">Top brands | Great deals | Trusted quality</p>
-                                <router-link :to="{ name: 'front.categories', params: { warehouse: frontWarehouse.slug, slug: ['electronics'] } }" class="hero-cta-btn">
-                                    Shop Now <right-outlined />
+                                <span class="hero-tag">{{ banner.tag || banner.sub_title || 'Upgrade Your World' }}</span>
+                                <h1 class="hero-title" v-if="banner.title" v-html="banner.title"></h1>
+                                <h1 class="hero-title" v-else>Latest Electronics<br /><span class="highlight-text">For A Smarter You</span></h1>
+                                <p class="hero-sub">{{ banner.subtitle || banner.description || 'Top brands | Great deals | Trusted quality' }}</p>
+                                <router-link :to="{ name: 'front.categories', params: { warehouse: frontWarehouse.slug, slug: [banner.category_slug || 'electronics'] } }" class="hero-cta-btn">
+                                    {{ banner.button_text || 'Shop Now' }} <right-outlined />
                                 </router-link>
                             </div>
 
