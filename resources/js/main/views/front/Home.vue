@@ -375,20 +375,76 @@ export default defineComponent({
 
         const heroBanners = computed(() => {
             const list = [];
+            const bannerTexts = frontSettings.value.top_banners_text || [];
+
             if (frontSettings.value.bottom_banners_1_details && frontSettings.value.bottom_banners_1_details.length) {
-                list.push(...frontSettings.value.bottom_banners_1_details);
+                frontSettings.value.bottom_banners_1_details.forEach((item, idx) => {
+                    const textConfig = bannerTexts[idx] || {};
+                    list.push({
+                        ...item,
+                        tag: textConfig.tag || item.tag,
+                        title: textConfig.title || item.title,
+                        subtitle: textConfig.subtitle || item.subtitle,
+                        button_text: textConfig.button_text || item.button_text,
+                        category_slug: textConfig.category_slug || item.category_slug,
+                    });
+                });
+            }
+            if (frontSettings.value.bottom_banners_2_details && frontSettings.value.bottom_banners_2_details.length) {
+                frontSettings.value.bottom_banners_2_details.forEach((item, idx) => {
+                    const indexOffset = list.length;
+                    const textConfig = bannerTexts[indexOffset] || {};
+                    list.push({
+                        ...item,
+                        tag: textConfig.tag || item.tag,
+                        title: textConfig.title || item.title,
+                        subtitle: textConfig.subtitle || item.subtitle,
+                        button_text: textConfig.button_text || item.button_text,
+                        category_slug: textConfig.category_slug || item.category_slug,
+                    });
+                });
+            }
+            if (frontSettings.value.bottom_banners_3_details && frontSettings.value.bottom_banners_3_details.length) {
+                frontSettings.value.bottom_banners_3_details.forEach((item, idx) => {
+                    const indexOffset = list.length;
+                    const textConfig = bannerTexts[indexOffset] || {};
+                    list.push({
+                        ...item,
+                        tag: textConfig.tag || item.tag,
+                        title: textConfig.title || item.title,
+                        subtitle: textConfig.subtitle || item.subtitle,
+                        button_text: textConfig.button_text || item.button_text,
+                        category_slug: textConfig.category_slug || item.category_slug,
+                    });
+                });
             }
             if (frontSettings.value.top_banners_details && frontSettings.value.top_banners_details.length) {
-                frontSettings.value.top_banners_details.forEach(item => {
+                frontSettings.value.top_banners_details.forEach((item, idx) => {
                     if (!list.some(b => b.url === item.url)) {
-                        list.push(item);
+                        const indexOffset = list.length;
+                        const textConfig = bannerTexts[indexOffset] || {};
+                        list.push({
+                            ...item,
+                            tag: textConfig.tag || item.tag,
+                            title: textConfig.title || item.title,
+                            subtitle: textConfig.subtitle || item.subtitle,
+                            button_text: textConfig.button_text || item.button_text,
+                            category_slug: textConfig.category_slug || item.category_slug,
+                        });
                     }
                 });
             }
             if (list.length > 0) {
                 return list;
             }
-            return [{ url: '/uploads/banners/hero_banner.png' }];
+            return [{
+                url: '/uploads/banners/hero_banner.png',
+                tag: bannerTexts[0]?.tag || 'UPGRADE YOUR WORLD',
+                title: bannerTexts[0]?.title || 'Latest Electronics<br /><span class="highlight-text">For A Smarter You</span>',
+                subtitle: bannerTexts[0]?.subtitle || 'Top brands | Great deals | Trusted quality',
+                button_text: bannerTexts[0]?.button_text || 'Shop Now',
+                category_slug: bannerTexts[0]?.category_slug || 'electronics',
+            }];
         });
 
         onMounted(() => {

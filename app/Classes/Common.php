@@ -52,6 +52,7 @@ class Common
             'audioFilesPath' => 'audio',
             'langImagePath' => 'langs',
             'warehouseLogoPath' => 'warehouses',
+            'frontLogoPath' => 'logos',
             'websiteImagePath' => 'website',
             'offlineRequestDocumentPath' => 'offline-requests',
         ];

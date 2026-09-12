@@ -28,6 +28,7 @@ class FrontWebsiteSettings extends BaseModel
         'contact_info_widget' => 'json',
         'links_widget' => 'json',
         'top_banners' => 'json',
+        'top_banners_text' => 'json',
         'bottom_banners_1' => 'json',
         'bottom_banners_2' => 'json',
         'bottom_banners_3' => 'json',
@@ -42,7 +43,9 @@ class FrontWebsiteSettings extends BaseModel
         'top_banners_details',
         'bottom_banners_1_details',
         'bottom_banners_2_details',
-        'bottom_banners_3_details'
+        'bottom_banners_3_details',
+        'header_logo_url',
+        'footer_logo_url',
     ];
 
     protected $hashableGetterArrayFunctions = [
@@ -164,5 +167,19 @@ class FrontWebsiteSettings extends BaseModel
         }
 
         return $bottomBanners3;
+    }
+
+    public function getHeaderLogoUrlAttribute()
+    {
+        $frontLogoPath = Common::getFolderPath('frontLogoPath');
+
+        return $this->header_logo == null ? asset('images/logo.png') : Common::getFileUrl($frontLogoPath, $this->header_logo);
+    }
+
+    public function getFooterLogoUrlAttribute()
+    {
+        $frontLogoPath = Common::getFolderPath('frontLogoPath');
+
+        return $this->footer_logo == null ? asset('images/logo.png') : Common::getFileUrl($frontLogoPath, $this->footer_logo);
     }
 }

@@ -5,6 +5,30 @@
     >
         <a-form layout="vertical">
             <a-row :gutter="16">
+                <a-col :xs="24" :sm="12" :md="12" :lg="12">
+                    <a-form-item label="Frontend Header Logo">
+                        <Upload
+                            :formData="addEditForm.formData"
+                            :folder="'logos'"
+                            :imageField="'header_logo'"
+                            @onFileUploaded="(file) => { addEditForm.formData.header_logo = file.file; addEditForm.formData.header_logo_url = file.file_url; }"
+                        />
+                    </a-form-item>
+                </a-col>
+                <a-col :xs="24" :sm="12" :md="12" :lg="12">
+                    <a-form-item label="Frontend Footer Logo">
+                        <Upload
+                            :formData="addEditForm.formData"
+                            :folder="'logos'"
+                            :imageField="'footer_logo'"
+                            @onFileUploaded="(file) => { addEditForm.formData.footer_logo = file.file; addEditForm.formData.footer_logo_url = file.file_url; }"
+                        />
+                    </a-form-item>
+                </a-col>
+            </a-row>
+            <a-divider />
+
+            <a-row :gutter="16">
                 <a-col :xs="24" :sm="24" :md="12" :lg="12">
                     <a-form-item
                         :label="$t('front_setting.footer_company_description')"
@@ -118,6 +142,7 @@ import {
     MinusCircleOutlined,
 } from "@ant-design/icons-vue";
 import DyanmicForm from "./DyanmicForm.vue";
+import Upload from "../../../../common/core/ui/file/Upload.vue";
 
 export default defineComponent({
     props: ["formData", "data", "rules"],
@@ -129,6 +154,7 @@ export default defineComponent({
         PlusOutlined,
         MinusCircleOutlined,
         DyanmicForm,
+        Upload,
     },
     setup(props, { emit }) {
         const addEditForm = reactive({

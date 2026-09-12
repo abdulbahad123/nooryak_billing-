@@ -74,15 +74,15 @@ export default defineComponent({
 			});
 		};
 
-		const getPath = (model, id) => {
+		const getPath = (model, xid) => {
 			var path,
-				item = model.id;
+				item = model.xid;
 
 			if (!model || typeof model !== "object") return;
 
-			if (model.id === id) return [item];
+			if (model.xid === xid) return [item];
 
-			(model.children || []).some((child) => (path = getPath(child, id)));
+			(model.children || []).some((child) => (path = getPath(child, xid)));
 			return path && [item].concat([...path]);
 		};
 
@@ -90,12 +90,14 @@ export default defineComponent({
 			selectedKeys.value = newVal.catSelectedKeys;
 
 			let parentIds = [];
-			allCategories.value.forEach((nodeItem) => {
-				const result = getPath(nodeItem, selectedKeys.value[0]);
-				if (result != undefined && result.includes(selectedKeys.value[0])) {
-					parentIds = result;
-				}
-			});
+			if (selectedKeys.value && selectedKeys.value.length > 0 && selectedKeys.value[0]) {
+				allCategories.value.forEach((nodeItem) => {
+					const result = getPath(nodeItem, selectedKeys.value[0]);
+					if (result != undefined && result.includes(selectedKeys.value[0])) {
+						parentIds = result;
+					}
+				});
+			}
 
 			openKeys.value = parentIds;
 		});

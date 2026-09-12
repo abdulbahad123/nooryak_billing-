@@ -13,13 +13,21 @@
                         class="brand-logo-link"
                     >
                         <div class="logo-flex">
-                            <div class="logo-icon-wrap">
-                                <shopping-outlined class="logo-shopping-icon" />
-                            </div>
-                            <div class="logo-text-wrap">
-                                <span class="logo-title">Electronifly</span>
-                                <span class="logo-subtitle" v-if="windowWidth >= 480">Smart Choices, Brighter Lives.</span>
-                            </div>
+                            <template v-if="frontSettings && frontSettings.header_logo">
+                                <img :src="frontSettings.header_logo_url" alt="Store Logo" class="brand-header-img" style="max-height: 42px; width: auto; object-fit: contain;" />
+                            </template>
+                            <template v-else-if="frontWarehouse && frontWarehouse.logo">
+                                <img :src="frontWarehouse.logo_url" alt="Store Logo" class="brand-header-img" style="max-height: 42px; width: auto; object-fit: contain;" />
+                            </template>
+                            <template v-else>
+                                <div class="logo-icon-wrap">
+                                    <shopping-outlined class="logo-shopping-icon" />
+                                </div>
+                                <div class="logo-text-wrap">
+                                    <span class="logo-title">Electronifly</span>
+                                    <span class="logo-subtitle" v-if="windowWidth >= 480">Smart Choices, Brighter Lives.</span>
+                                </div>
+                            </template>
                         </div>
                     </router-link>
                 </div>

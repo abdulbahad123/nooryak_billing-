@@ -144,7 +144,7 @@ export default defineComponent({
 
         const setUrlData = () => {
             const url =
-                "front-settings?fields=id,xid,featured_categories,x_featured_categories,featured_products_details,featured_categories_title,featured_categories_subtitle,featured_products,x_featured_products,featured_categories_details,featured_products_title,featured_products_subtitle,facebook_url,twitter_url,instagram_url,linkedin_url,youtube_url,pages_widget,contact_info_widget,links_widget,footer_copyright_text,top_banners,top_banners_details,bottom_banners_1,bottom_banners_1_details,bottom_banners_2,bottom_banners_2_details,bottom_banners_3,bottom_banners_3_details,footer_company_description";
+                "front-settings?fields=id,xid,featured_categories,x_featured_categories,featured_products_details,featured_categories_title,featured_categories_subtitle,featured_products,x_featured_products,featured_categories_details,featured_products_title,featured_products_subtitle,facebook_url,twitter_url,instagram_url,linkedin_url,youtube_url,pages_widget,contact_info_widget,links_widget,footer_copyright_text,top_banners,top_banners_details,bottom_banners_1,bottom_banners_1_details,bottom_banners_2,bottom_banners_2_details,bottom_banners_3,bottom_banners_3_details,footer_company_description,header_logo,header_logo_url,footer_logo,footer_logo_url,top_banners_text";
 
             axiosAdmin.get(url).then((response) => {
                 const responseData = response.data[0];
@@ -170,6 +170,11 @@ export default defineComponent({
                     bottom_banners_1: responseData.bottom_banners_1,
                     bottom_banners_2: responseData.bottom_banners_2,
                     bottom_banners_3: responseData.bottom_banners_3,
+                    header_logo: responseData.header_logo,
+                    header_logo_url: responseData.header_logo_url,
+                    footer_logo: responseData.footer_logo,
+                    footer_logo_url: responseData.footer_logo_url,
+                    top_banners_text: responseData.top_banners_text || [],
                 };
                 frontSettingsData.value = responseData;
             });

@@ -7,7 +7,22 @@
             <a-col :span="20">
                 <a-row :gutter="[30, 30]">
                     <a-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
-                        <img :src="frontWarehouse.dark_logo_url" class="footer-logo" />
+                        <template v-if="frontAppSetting && frontAppSetting.footer_logo">
+                            <img :src="frontAppSetting.footer_logo_url" alt="Footer Logo" class="footer-logo" style="max-height: 45px; width: auto; object-fit: contain;" />
+                        </template>
+                        <template v-else-if="frontWarehouse && frontWarehouse.dark_logo">
+                            <img :src="frontWarehouse.dark_logo_url" class="footer-logo" />
+                        </template>
+                        <template v-else>
+                            <div class="logo-flex text-white">
+                                <div class="logo-icon-wrap">
+                                    <shopping-outlined class="logo-shopping-icon" />
+                                </div>
+                                <div class="logo-text-wrap">
+                                    <span class="logo-title text-white">Electronifly</span>
+                                </div>
+                            </div>
+                        </template>
                         <p class="site-description mt-20">
                             {{ frontAppSetting.footer_company_description }}
                         </p>
