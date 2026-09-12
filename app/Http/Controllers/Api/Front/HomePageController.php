@@ -22,6 +22,7 @@ use Carbon\Carbon;
 use Examyou\RestAPI\ApiResponse;
 use Examyou\RestAPI\Exceptions\ApiException;
 use Illuminate\Http\Request;
+use Vinkla\Hashids\Facades\Hashids;
 
 class HomePageController extends ApiBaseController
 {
@@ -215,9 +216,9 @@ class HomePageController extends ApiBaseController
         ]);
     }
 
-    public function categoryBySlug(Request $request)
+    public function categoryBySlug(Request $request, $slug = null)
     {
-        $slug = $request->slug;
+        $slug = $slug ?? $request->slug ?? $request->route('slug');
         $category = Category::select('id', 'name', 'slug')->where('slug', $slug)->first();
 
         if ($category) {
