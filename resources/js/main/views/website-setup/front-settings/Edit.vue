@@ -52,7 +52,34 @@
         </a-col>
         <a-col :xs="24" :sm="24" :md="24" :lg="20" :xl="20">
             <admin-page-table-content>
-                <template v-if="formData && formData.featured_categories">
+                <a-alert
+                    v-if="renderError"
+                    message="Frontend Component Error"
+                    type="error"
+                    show-icon
+                    class="mb-20"
+                >
+                    <template #description>
+                        <div><strong>Error:</strong> {{ renderError.message }}</div>
+                        <div style="white-space: pre-wrap; font-family: monospace; font-size: 11px; margin-top: 10px; background: #fff0f0; padding: 10px; border: 1px solid #ffccc7; max-height: 200px; overflow: auto;">
+                            {{ renderError.stack }}
+                        </div>
+                    </template>
+                </a-alert>
+
+                <a-alert
+                    v-if="apiError"
+                    message="API Data Loading Error"
+                    type="error"
+                    show-icon
+                    class="mb-20"
+                >
+                    <template #description>
+                        <div>{{ apiError }}</div>
+                    </template>
+                </a-alert>
+
+                <template v-if="frontSettingsData && frontSettingsData.xid">
                     <FeaturedCategories
                         v-show="activeKey[0] == 'featured_categories'"
                         :formData="formData"
@@ -95,8 +122,8 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted, watch } from "vue";
-import { notification } from "ant-design-vue";
+import { defineComponent, ref, onMounted, watch, onErrorCaptured } from "vue";
+import { notification, message } from "ant-design-vue";
 import {
     HomeOutlined,
     ShoppingOutlined,
@@ -137,46 +164,74 @@ export default defineComponent({
         const formData = ref({});
         const frontSettingsData = ref({});
         const activeKey = ref(["featured_categories"]);
+        const renderError = ref(null);
+        const apiError = ref(null);
+
+        onErrorCaptured((err, instance, info) => {
+            console.error("Captured Front Settings error:", err, info);
+            renderError.value = {
+                message: err ? err.message : "Component render failure",
+                stack: err ? err.stack : "",
+                info: info,
+            };
+            return false;
+        });
 
         onMounted(() => {
             setUrlData();
         });
 
         const setUrlData = () => {
+            apiError.value = null;
             const url =
                 "front-settings?fields=id,xid,featured_categories,x_featured_categories,featured_products_details,featured_categories_title,featured_categories_subtitle,featured_products,x_featured_products,featured_categories_details,featured_products_title,featured_products_subtitle,facebook_url,twitter_url,instagram_url,linkedin_url,youtube_url,pages_widget,contact_info_widget,links_widget,footer_copyright_text,top_banners,top_banners_details,bottom_banners_1,bottom_banners_1_details,bottom_banners_2,bottom_banners_2_details,bottom_banners_3,bottom_banners_3_details,footer_company_description,header_logo,header_logo_url,footer_logo,footer_logo_url,top_banners_text";
 
-            axiosAdmin.get(url).then((response) => {
-                const responseData = response.data[0];
+            axiosAdmin
+                .get(url)
+                .then((response) => {
+                    const responseData =
+                        response.data && Array.isArray(response.data)
+                            ? response.data[0]
+                            : response.data;
+
+                    if (!responseData || typeof responseData !== "object") {
+                        apiError.value =
+                            "Received invalid API data format: " +
+                            JSON.stringify(response.data);
+                        return;
+                    }
                 formData.value = {
-                    featured_categories: responseData.x_featured_categories,
-                    featured_categories_title: responseData.featured_categories_title,
+                    featured_categories: responseData.x_featured_categories || [],
+                    featured_categories_title: responseData.featured_categories_title || "",
                     featured_categories_subtitle:
-                        responseData.featured_categories_subtitle,
-                    featured_products: responseData.x_featured_products,
-                    featured_products_title: responseData.featured_products_title,
-                    featured_products_subtitle: responseData.featured_products_subtitle,
-                    facebook_url: responseData.facebook_url,
-                    twitter_url: responseData.twitter_url,
-                    instagram_url: responseData.instagram_url,
-                    linkedin_url: responseData.linkedin_url,
-                    youtube_url: responseData.youtube_url,
-                    pages_widget: responseData.pages_widget,
-                    contact_info_widget: responseData.contact_info_widget,
-                    links_widget: responseData.links_widget,
-                    footer_company_description: responseData.footer_company_description,
-                    footer_copyright_text: responseData.footer_copyright_text,
-                    top_banners: responseData.top_banners,
-                    bottom_banners_1: responseData.bottom_banners_1,
-                    bottom_banners_2: responseData.bottom_banners_2,
-                    bottom_banners_3: responseData.bottom_banners_3,
-                    header_logo: responseData.header_logo,
-                    header_logo_url: responseData.header_logo_url,
-                    footer_logo: responseData.footer_logo,
-                    footer_logo_url: responseData.footer_logo_url,
+                        responseData.featured_categories_subtitle || "",
+                    featured_products: responseData.x_featured_products || [],
+                    featured_products_title: responseData.featured_products_title || "",
+                    featured_products_subtitle: responseData.featured_products_subtitle || "",
+                    facebook_url: responseData.facebook_url || "",
+                    twitter_url: responseData.twitter_url || "",
+                    instagram_url: responseData.instagram_url || "",
+                    linkedin_url: responseData.linkedin_url || "",
+                    youtube_url: responseData.youtube_url || "",
+                    pages_widget: responseData.pages_widget || [],
+                    contact_info_widget: responseData.contact_info_widget || [],
+                    links_widget: responseData.links_widget || [],
+                    footer_company_description: responseData.footer_company_description || "",
+                    footer_copyright_text: responseData.footer_copyright_text || "",
+                    top_banners: responseData.top_banners || [],
+                    bottom_banners_1: responseData.bottom_banners_1 || [],
+                    bottom_banners_2: responseData.bottom_banners_2 || [],
+                    bottom_banners_3: responseData.bottom_banners_3 || [],
+                    header_logo: responseData.header_logo || "",
+                    header_logo_url: responseData.header_logo_url || "",
+                    footer_logo: responseData.footer_logo || "",
+                    footer_logo_url: responseData.footer_logo_url || "",
                     top_banners_text: responseData.top_banners_text || [],
                 };
                 frontSettingsData.value = responseData;
+            }).catch((err) => {
+                console.error("API error in setUrlData:", err);
+                apiError.value = err.message + (err.response ? " (HTTP " + err.response.status + ")" : "");
             });
         };
 
@@ -218,6 +273,8 @@ export default defineComponent({
             frontSettingsData,
             onSubmit,
             activeKey,
+            renderError,
+            apiError,
         };
     },
 });

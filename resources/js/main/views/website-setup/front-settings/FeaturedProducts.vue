@@ -205,7 +205,7 @@ export default defineComponent({
 
             if (value != "") {
                 state.productFetching = true;
-                const featuredProducsArray = addEditForm.formData.featured_products;
+                const featuredProducsArray = addEditForm.formData.featured_products || [];
                 let url =
                     "products?fields=id,xid,name,image,image_url,details{id,xid,product_id,x_product_id,sales_price,sales_tax_type,tax_id,x_tax_id,mrp},brand_id,x_brand_id,category_id,x_category_id,details:tax{id,xid,rate},brand{id,xid,name,image,image_url},category{id,xid,name,image,image_url}";
                 let filterString = "";

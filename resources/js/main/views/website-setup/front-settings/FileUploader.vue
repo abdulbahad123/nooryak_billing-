@@ -13,7 +13,7 @@
             <div v-if="loading">
                 <loading-outlined></loading-outlined>
             </div>
-            <div v-else>
+            <div v-else-if="maxCount ? fileList.length < maxCount : true">
                 <plus-outlined />
                 <div class="ant-upload-text">Upload</div>
             </div>
@@ -24,7 +24,7 @@
     </div>
 </template>
 <script>
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref, onMounted, watch } from "vue";
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
 import { filter, forEach } from "lodash-es";
@@ -41,7 +41,18 @@ function getBase64(file) {
 }
 
 export default defineComponent({
-    props: ["fileNames", "fileUrls"],
+    props: {
+        fileNames: {
+            default: () => [],
+        },
+        fileUrls: {
+            default: () => [],
+        },
+        maxCount: {
+            type: Number,
+            default: null,
+        },
+    },
     emits: ["uploadSuccess"],
     components: {
         PlusOutlined,
@@ -56,9 +67,25 @@ export default defineComponent({
         const loading = ref(false);
 
         const initFiles = () => {
-            fileList.value = Array.isArray(props.fileUrls) ? [...props.fileUrls] : [];
-            fileArray.value = Array.isArray(props.fileNames) ? [...props.fileNames] : [];
-            fileArrayWithUid.value = Array.isArray(props.fileUrls) ? [...props.fileUrls] : [];
+            let urls = props.fileUrls;
+            let names = props.fileNames;
+            if (typeof urls === "string") {
+                try {
+                    urls = JSON.parse(urls);
+                } catch (e) {
+                    urls = [];
+                }
+            }
+            if (typeof names === "string") {
+                try {
+                    names = JSON.parse(names);
+                } catch (e) {
+                    names = [];
+                }
+            }
+            fileList.value = Array.isArray(urls) ? [...urls] : [];
+            fileArray.value = Array.isArray(names) ? [...names] : [];
+            fileArrayWithUid.value = Array.isArray(urls) ? [...urls] : [];
         };
 
         onMounted(() => {

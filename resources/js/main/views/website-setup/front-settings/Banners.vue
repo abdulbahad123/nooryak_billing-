@@ -12,21 +12,27 @@
                 <a-col :xs="24" :sm="24" :md="8" :lg="8">
                     <FileUploader
                         key="bottom_banners_1"
-                        :fileUrls="data.bottom_banners_1_details"
-                        :fileNames="addEditForm.formData.bottom_banners_1"
+                        :maxCount="1"
+                        :fileUrls="data ? data.bottom_banners_1_details : []"
+                        :fileNames="addEditForm.formData ? addEditForm.formData.bottom_banners_1 : []"
                         @uploadSuccess="bottomBanner1UploadSuccess"
                     />
                 </a-col>
                 <a-col :xs="24" :sm="24" :md="16" :lg="16" v-if="bannerTexts[0]">
                     <a-row :gutter="12">
-                        <a-col :span="12">
+                        <a-col :span="8">
                             <a-form-item label="Banner Tag">
                                 <a-input v-model:value="bannerTexts[0].tag" placeholder="UPGRADE YOUR WORLD" />
                             </a-form-item>
                         </a-col>
-                        <a-col :span="12">
+                        <a-col :span="8">
                             <a-form-item label="Button Text">
                                 <a-input v-model:value="bannerTexts[0].button_text" placeholder="Shop Now" />
+                            </a-form-item>
+                        </a-col>
+                        <a-col :span="8">
+                            <a-form-item label="Button Link / Slug">
+                                <a-input v-model:value="bannerTexts[0].category_slug" placeholder="mobiles or /store/..." />
                             </a-form-item>
                         </a-col>
                         <a-col :span="24">
@@ -52,21 +58,27 @@
                 <a-col :xs="24" :sm="24" :md="8" :lg="8">
                     <FileUploader
                         key="bottom_banners_2"
-                        :fileUrls="data.bottom_banners_2_details"
-                        :fileNames="addEditForm.formData.bottom_banners_2"
+                        :maxCount="1"
+                        :fileUrls="data ? data.bottom_banners_2_details : []"
+                        :fileNames="addEditForm.formData ? addEditForm.formData.bottom_banners_2 : []"
                         @uploadSuccess="bottomBanner2UploadSuccess"
                     />
                 </a-col>
                 <a-col :xs="24" :sm="24" :md="16" :lg="16" v-if="bannerTexts[1]">
                     <a-row :gutter="12">
-                        <a-col :span="12">
+                        <a-col :span="8">
                             <a-form-item label="Banner Tag">
                                 <a-input v-model:value="bannerTexts[1].tag" placeholder="PREMIUM TECH SHOWCASE" />
                             </a-form-item>
                         </a-col>
-                        <a-col :span="12">
+                        <a-col :span="8">
                             <a-form-item label="Button Text">
                                 <a-input v-model:value="bannerTexts[1].button_text" placeholder="Explore Deals" />
+                            </a-form-item>
+                        </a-col>
+                        <a-col :span="8">
+                            <a-form-item label="Button Link / Slug">
+                                <a-input v-model:value="bannerTexts[1].category_slug" placeholder="desktops or /store/..." />
                             </a-form-item>
                         </a-col>
                         <a-col :span="24">
@@ -92,21 +104,27 @@
                 <a-col :xs="24" :sm="24" :md="8" :lg="8">
                     <FileUploader
                         key="bottom_banners_3"
-                        :fileUrls="data.bottom_banners_3_details"
-                        :fileNames="addEditForm.formData.bottom_banners_3"
+                        :maxCount="1"
+                        :fileUrls="data ? data.bottom_banners_3_details : []"
+                        :fileNames="addEditForm.formData ? addEditForm.formData.bottom_banners_3 : []"
                         @uploadSuccess="bottomBanner3UploadSuccess"
                     />
                 </a-col>
                 <a-col :xs="24" :sm="24" :md="16" :lg="16" v-if="bannerTexts[2]">
                     <a-row :gutter="12">
-                        <a-col :span="12">
+                        <a-col :span="8">
                             <a-form-item label="Banner Tag">
                                 <a-input v-model:value="bannerTexts[2].tag" placeholder="EXCLUSIVE PROMOTION" />
                             </a-form-item>
                         </a-col>
-                        <a-col :span="12">
+                        <a-col :span="8">
                             <a-form-item label="Button Text">
                                 <a-input v-model:value="bannerTexts[2].button_text" placeholder="Buy Now" />
+                            </a-form-item>
+                        </a-col>
+                        <a-col :span="8">
+                            <a-form-item label="Button Link / Slug">
+                                <a-input v-model:value="bannerTexts[2].category_slug" placeholder="furniture or /store/..." />
                             </a-form-item>
                         </a-col>
                         <a-col :span="24">
@@ -131,8 +149,8 @@
                     </a-typography-title>
                     <FileUploader
                         key="top_banners_details"
-                        :fileUrls="data.top_banners_details"
-                        :fileNames="addEditForm.formData.top_banners"
+                        :fileUrls="data ? data.top_banners_details : []"
+                        :fileNames="addEditForm.formData ? addEditForm.formData.top_banners : []"
                         @uploadSuccess="topBannerUploadSuccess"
                     />
                 </a-col>
@@ -188,25 +206,14 @@ export default defineComponent({
             { tag: "", title: "", subtitle: "", button_text: "", category_slug: "" },
         ]);
 
-        onMounted(() => {
-            addEditForm.formData = props.formData;
-            initBannerTexts(props.formData.top_banners_text);
-        });
-
-        watch(
-            () => props.formData,
-            (newVal) => {
-                if (newVal) {
-                    addEditForm.formData = newVal;
-                    if (newVal.top_banners_text) {
-                        initBannerTexts(newVal.top_banners_text);
-                    }
-                }
-            },
-            { deep: true, immediate: true }
-        );
-
         const initBannerTexts = (existingTexts) => {
+            if (typeof existingTexts === "string") {
+                try {
+                    existingTexts = JSON.parse(existingTexts);
+                } catch (e) {
+                    existingTexts = [];
+                }
+            }
             if (Array.isArray(existingTexts) && existingTexts.length > 0) {
                 for (let i = 0; i < 3; i++) {
                     if (existingTexts[i]) {
@@ -221,6 +228,26 @@ export default defineComponent({
                 }
             }
         };
+
+        onMounted(() => {
+            addEditForm.formData = props.formData || {};
+            if (props.formData && props.formData.top_banners_text) {
+                initBannerTexts(props.formData.top_banners_text);
+            }
+        });
+
+        watch(
+            () => props.formData,
+            (newVal) => {
+                if (newVal) {
+                    addEditForm.formData = newVal;
+                    if (newVal.top_banners_text) {
+                        initBannerTexts(newVal.top_banners_text);
+                    }
+                }
+            },
+            { deep: true, immediate: true }
+        );
 
         const onSubmit = () => {
             addEditForm.formData.top_banners_text = bannerTexts.value;

@@ -177,7 +177,7 @@ export default defineComponent({
 
             if (value != "") {
                 state.categoryFetching = true;
-                const featuredCategoriesArray = addEditForm.formData.featured_categories;
+                const featuredCategoriesArray = addEditForm.formData.featured_categories || [];
                 let url = "categories?fields=id,xid,name,image,image_url";
                 let filterString = "";
                 let hashable = "";

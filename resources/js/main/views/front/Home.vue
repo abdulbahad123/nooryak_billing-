@@ -70,51 +70,7 @@
                 </div>
             </section>
 
-            <!-- 3. Triple Offer Cards Row -->
-            <section class="triple-offers-section">
-                <div class="triple-grid">
-                    <!-- Card 1: Mobile Fest -->
-                    <div class="offer-card dark-blue-card">
-                        <div class="offer-card-info">
-                            <span class="offer-card-tag">MOBILE FEST</span>
-                            <h3 class="offer-card-title">Up to 50% Off</h3>
-                            <p class="offer-card-sub">Latest Smartphones.<br />Top Brands. Best Prices.</p>
-                            <router-link :to="{ name: 'front.categories', params: { warehouse: frontWarehouse.slug, slug: ['mobiles'] } }" class="offer-card-btn light-btn">
-                                Shop Now <right-outlined />
-                            </router-link>
-                        </div>
-                        <img :src="(frontSettings.bottom_banners_1_details && frontSettings.bottom_banners_1_details[0]) ? frontSettings.bottom_banners_1_details[0].url : '/uploads/banners/hero_banner.png'" alt="Mobile Fest" class="offer-card-img" />
-                    </div>
-
-                    <!-- Card 2: Laptops -->
-                    <div class="offer-card light-blue-card">
-                        <div class="offer-card-info">
-                            <span class="offer-card-tag text-blue-600">LAPTOPS</span>
-                            <h3 class="offer-card-title text-gray-900">Power Your Potential</h3>
-                            <p class="offer-card-sub text-gray-600">Up to <strong class="text-blue-600">40% Off</strong></p>
-                            <router-link :to="{ name: 'front.categories', params: { warehouse: frontWarehouse.slug, slug: ['desktops'] } }" class="offer-card-btn blue-btn">
-                                Shop Now <right-outlined />
-                            </router-link>
-                        </div>
-                        <img :src="(frontSettings.bottom_banners_2_details && frontSettings.bottom_banners_2_details[0]) ? frontSettings.bottom_banners_2_details[0].url : '/uploads/banners/gadgets_banner.png'" alt="Laptops" class="offer-card-img" />
-                    </div>
-
-                    <!-- Card 3: Home Appliances -->
-                    <div class="offer-card peach-card">
-                        <div class="offer-card-info">
-                            <span class="offer-card-tag text-orange-600">HOME APPLIANCES</span>
-                            <h3 class="offer-card-title text-gray-900">For a Better Everyday</h3>
-                            <p class="offer-card-sub text-gray-600">Up to <strong class="text-orange-600">60% Off</strong></p>
-                            <router-link :to="{ name: 'front.categories', params: { warehouse: frontWarehouse.slug, slug: ['furniture'] } }" class="offer-card-btn blue-btn">
-                                Shop Now <right-outlined />
-                            </router-link>
-                        </div>
-                        <img :src="(frontSettings.bottom_banners_3_details && frontSettings.bottom_banners_3_details[0]) ? frontSettings.bottom_banners_3_details[0].url : '/uploads/banners/furniture_banner.png'" alt="Home Appliances" class="offer-card-img" />
-                    </div>
-                </div>
-            </section>
-
-            <!-- 4. Featured Products Section -->
+            <!-- Featured Products Section -->
             <section class="store-section">
                 <div class="section-top-bar">
                     <div>
@@ -142,7 +98,7 @@
                 </div>
             </section>
 
-            <!-- 5. Limited Period Offer Section -->
+            <!-- Limited Period Offer Section -->
             <section class="store-section offer-timer-section">
                 <div class="section-top-bar flex-between-wrap">
                     <div>
@@ -162,35 +118,6 @@
                         :product="product"
                         :currency="currency"
                     />
-                </div>
-            </section>
-
-            <!-- 6. Double Promo Banners Row -->
-            <section class="double-banner-section">
-                <div class="double-grid">
-                    <!-- Banner 1: Best Gadgets -->
-                    <div class="double-banner-card dark-gadget-bg">
-                        <div class="double-banner-info">
-                            <h3 class="double-banner-title">Best Gadgets<br />For a Smarter Lifestyle</h3>
-                            <p class="double-banner-tag">Up to <span class="highlight-yellow">60% OFF</span></p>
-                            <router-link :to="{ name: 'front.categories', params: { warehouse: frontWarehouse.slug } }" class="double-banner-btn light-pill-btn">
-                                Shop Now <right-outlined />
-                            </router-link>
-                        </div>
-                        <img :src="(frontSettings.bottom_banners_2_details && frontSettings.bottom_banners_2_details[0]) ? frontSettings.bottom_banners_2_details[0].url : '/uploads/banners/gadgets_banner.png'" alt="Gadgets" class="double-banner-img" />
-                    </div>
-
-                    <!-- Banner 2: Home Furniture -->
-                    <div class="double-banner-card cream-home-bg">
-                        <div class="double-banner-info">
-                            <h3 class="double-banner-title text-gray-900">Make Your Home<br />More Beautiful</h3>
-                            <p class="double-banner-sub text-gray-600">Stylish Furniture for Modern Living</p>
-                            <router-link :to="{ name: 'front.categories', params: { warehouse: frontWarehouse.slug, slug: ['furniture'] } }" class="double-banner-btn blue-pill-btn">
-                                Shop Now <right-outlined />
-                            </router-link>
-                        </div>
-                        <img :src="(frontSettings.bottom_banners_3_details && frontSettings.bottom_banners_3_details[0]) ? frontSettings.bottom_banners_3_details[0].url : '/uploads/banners/furniture_banner.png'" alt="Home Furniture" class="double-banner-img" />
-                    </div>
                 </div>
             </section>
 
@@ -220,39 +147,7 @@
                 </div>
             </section>
 
-            <!-- 8. Value Guarantee Badges Row -->
-            <section class="value-guarantee-bar">
-                <div class="guarantee-grid">
-                    <div class="guarantee-item">
-                        <div class="guarantee-icon"><car-outlined /></div>
-                        <div>
-                            <div class="guarantee-head">Free Shipping</div>
-                            <div class="guarantee-sub">On orders over {{ formatAmountCurrency(500) }}</div>
-                        </div>
-                    </div>
-                    <div class="guarantee-item">
-                        <div class="guarantee-icon"><reload-outlined /></div>
-                        <div>
-                            <div class="guarantee-head">Easy Returns</div>
-                            <div class="guarantee-sub">7 days hassle free</div>
-                        </div>
-                    </div>
-                    <div class="guarantee-item">
-                        <div class="guarantee-icon"><safety-certificate-outlined /></div>
-                        <div>
-                            <div class="guarantee-head">Secure Payment</div>
-                            <div class="guarantee-sub">100% encrypted</div>
-                        </div>
-                    </div>
-                    <div class="guarantee-item">
-                        <div class="guarantee-icon"><customer-service-outlined /></div>
-                        <div>
-                            <div class="guarantee-head">24/7 Support</div>
-                            <div class="guarantee-sub">We're here to help</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+
         </div>
     </div>
 </template>
@@ -475,6 +370,124 @@ export default defineComponent({
             if (timerInterval) clearInterval(timerInterval);
         });
 
+        const parsedBannerTexts = computed(() => {
+            let bt = frontSettings.value.top_banners_text || [];
+            if (typeof bt === "string") {
+                try {
+                    bt = JSON.parse(bt);
+                } catch (e) {
+                    bt = [];
+                }
+            }
+            return Array.isArray(bt) ? bt : [];
+        });
+
+        const card1Data = computed(() => {
+            const img =
+                frontSettings.value.bottom_banners_1_details &&
+                frontSettings.value.bottom_banners_1_details[0]
+                    ? frontSettings.value.bottom_banners_1_details[0].url
+                    : "/uploads/banners/hero_banner.png";
+            const txt = parsedBannerTexts.value[0] || {};
+            return {
+                url: img,
+                tag:
+                    txt.tag && String(txt.tag).trim() !== ""
+                        ? txt.tag
+                        : "MOBILE FEST",
+                title:
+                    txt.title && String(txt.title).trim() !== ""
+                        ? txt.title
+                        : "Up to 50% Off",
+                subtitle:
+                    txt.subtitle && String(txt.subtitle).trim() !== ""
+                        ? txt.subtitle
+                        : "Latest Smartphones. Top Brands. Best Prices.",
+                button_text:
+                    txt.button_text && String(txt.button_text).trim() !== ""
+                        ? txt.button_text
+                        : "Shop Now",
+                category_slug:
+                    txt.category_slug && String(txt.category_slug).trim() !== ""
+                        ? txt.category_slug
+                        : "mobiles",
+            };
+        });
+
+        const card2Data = computed(() => {
+            const img =
+                frontSettings.value.bottom_banners_2_details &&
+                frontSettings.value.bottom_banners_2_details[0]
+                    ? frontSettings.value.bottom_banners_2_details[0].url
+                    : "/uploads/banners/gadgets_banner.png";
+            const txt = parsedBannerTexts.value[1] || {};
+            return {
+                url: img,
+                tag:
+                    txt.tag && String(txt.tag).trim() !== ""
+                        ? txt.tag
+                        : "LAPTOPS",
+                title:
+                    txt.title && String(txt.title).trim() !== ""
+                        ? txt.title
+                        : "Power Your Potential",
+                subtitle:
+                    txt.subtitle && String(txt.subtitle).trim() !== ""
+                        ? txt.subtitle
+                        : "Up to 40% Off",
+                button_text:
+                    txt.button_text && String(txt.button_text).trim() !== ""
+                        ? txt.button_text
+                        : "Shop Now",
+                category_slug:
+                    txt.category_slug && String(txt.category_slug).trim() !== ""
+                        ? txt.category_slug
+                        : "desktops",
+            };
+        });
+
+        const card3Data = computed(() => {
+            const img =
+                frontSettings.value.bottom_banners_3_details &&
+                frontSettings.value.bottom_banners_3_details[0]
+                    ? frontSettings.value.bottom_banners_3_details[0].url
+                    : "/uploads/banners/furniture_banner.png";
+            const txt = parsedBannerTexts.value[2] || {};
+            return {
+                url: img,
+                tag:
+                    txt.tag && String(txt.tag).trim() !== ""
+                        ? txt.tag
+                        : "HOME APPLIANCES",
+                title:
+                    txt.title && String(txt.title).trim() !== ""
+                        ? txt.title
+                        : "For a Better Everyday",
+                subtitle:
+                    txt.subtitle && String(txt.subtitle).trim() !== ""
+                        ? txt.subtitle
+                        : "Up to 60% Off",
+                button_text:
+                    txt.button_text && String(txt.button_text).trim() !== ""
+                        ? txt.button_text
+                        : "Shop Now",
+                category_slug:
+                    txt.category_slug && String(txt.category_slug).trim() !== ""
+                        ? txt.category_slug
+                        : "furniture",
+            };
+        });
+
+        const isExternalLink = (link) => {
+            if (!link || typeof link !== "string") return false;
+            const str = link.trim().toLowerCase();
+            return (
+                str.startsWith("http://") ||
+                str.startsWith("https://") ||
+                str.startsWith("/")
+            );
+        };
+
         const categorySlidesToShow = computed(() => {
             if (windowWidth.value <= 480) return 2;
             if (windowWidth.value <= 768) return 3;
@@ -486,6 +499,10 @@ export default defineComponent({
             loading,
             frontSettings,
             heroBanners,
+            card1Data,
+            card2Data,
+            card3Data,
+            isExternalLink,
             frontProductCards,
             featuredProducts,
             currency,
