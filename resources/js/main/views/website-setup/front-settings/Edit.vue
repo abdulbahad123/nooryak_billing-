@@ -231,7 +231,9 @@ export default defineComponent({
                 frontSettingsData.value = responseData;
             }).catch((err) => {
                 console.error("API error in setUrlData:", err);
-                apiError.value = err.message + (err.response ? " (HTTP " + err.response.status + ")" : "");
+                const statusStr = (err && err.status) ? ` (HTTP ${err.status})` : (err && err.response && err.response.status ? ` (HTTP ${err.response.status})` : "");
+                const msgStr = (err && err.data && err.data.message) || (err && err.data && err.data.error && err.data.error.message) || (err && err.message) || (typeof err === "string" ? err : JSON.stringify(err));
+                apiError.value = `${msgStr}${statusStr}`;
             });
         };
 
