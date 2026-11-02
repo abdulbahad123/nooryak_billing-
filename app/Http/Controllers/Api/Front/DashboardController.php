@@ -229,14 +229,25 @@ class DashboardController extends ApiBaseController
             $order->due_amount = $total;
             $order->total_items = $totalItems;
             $order->total_quantity = $totalQuantities;
-            $order->company_id = $warehouse->company_id;
+            $updateData = [
+                'company_id' => $warehouse->company_id,
+            ];
             if ($request->has('document') && !empty($request->document)) {
                 $order->document = $request->document;
+                $updateData['document'] = $request->document;
             }
             if ($request->has('notes') && !empty($request->notes)) {
                 $order->notes = $request->notes;
+                $updateData['notes'] = $request->notes;
+            } else if ($request->payment_method === 'upi') {
+                $order->notes = 'UPI Payment';
+                $updateData['notes'] = 'UPI Payment';
             }
             $order->save();
+
+            \Illuminate\Support\Facades\DB::table('orders')
+                ->where('id', $order->id)
+                ->update($updateData);
 
             $orderShippingAddress = new OrderShippingAddress();
             $orderShippingAddress->order_id = $order->id;

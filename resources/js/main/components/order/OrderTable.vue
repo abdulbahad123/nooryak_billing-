@@ -541,6 +541,80 @@
                                 </template>
                             </template>
                         </a-table>
+
+                        <!-- Payment Details & Proof (Online Orders & UPI) -->
+                        <div
+                            v-if="
+                                orderItemData &&
+                                orderItemData.record &&
+                                (orderItemData.record.document_url ||
+                                    orderItemData.record.document ||
+                                    orderItemData.record.notes ||
+                                    (orderItemData.record.order_payments && orderItemData.record.order_payments.length > 0))
+                            "
+                            style="margin-top: 14px; padding: 14px 18px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px;"
+                        >
+                            <a-row :gutter="16" align="middle">
+                                <a-col :xs="24" :sm="12" :md="6">
+                                    <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px;">
+                                        Payment Method
+                                    </div>
+                                    <div style="font-size: 14px; font-weight: 600; color: #0f172a; margin-top: 4px;">
+                                        <a-tag color="blue" v-if="orderItemData.record.notes && orderItemData.record.notes.toLowerCase().includes('upi')">
+                                            UPI Payment
+                                        </a-tag>
+                                        <a-tag color="green" v-else-if="orderItemData.record.order_payments && orderItemData.record.order_payments.length > 0 && orderItemData.record.order_payments[0]?.payment?.payment_mode?.name">
+                                            {{ orderItemData.record.order_payments[0].payment.payment_mode.name }}
+                                        </a-tag>
+                                        <a-tag color="orange" v-else-if="orderItemData.record.notes && orderItemData.record.notes.toLowerCase().includes('cash')">
+                                            Cash on Delivery
+                                        </a-tag>
+                                        <a-tag color="purple" v-else-if="orderItemData.record.document_url || orderItemData.record.document">
+                                            UPI / Online
+                                        </a-tag>
+                                        <span v-else style="color: #94a3b8;">Standard</span>
+                                    </div>
+                                </a-col>
+
+                                <a-col :xs="24" :sm="12" :md="10" v-if="orderItemData.record.notes">
+                                    <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px;">
+                                        Payment Notes / Reference
+                                    </div>
+                                    <div style="font-size: 13px; color: #334155; margin-top: 4px; font-family: monospace; background: #fff; padding: 5px 10px; border-radius: 6px; border: 1px solid #cbd5e1; display: inline-block;">
+                                        {{ orderItemData.record.notes }}
+                                    </div>
+                                </a-col>
+
+                                <a-col :xs="24" :sm="24" :md="8" v-if="orderItemData.record.document_url || orderItemData.record.document">
+                                    <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 4px;">
+                                        Payment Proof Receipt
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 12px; margin-top: 4px;">
+                                        <a :href="orderItemData.record.document_url" target="_blank" v-if="orderItemData.record.document_url">
+                                            <img
+                                                :src="orderItemData.record.document_url"
+                                                alt="Payment Proof"
+                                                style="width: 58px; height: 58px; object-fit: cover; border-radius: 6px; border: 1.5px solid #0284c7; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer;"
+                                            />
+                                        </a>
+                                        <div>
+                                            <a-button
+                                                type="primary"
+                                                size="small"
+                                                :href="orderItemData.record.document_url"
+                                                target="_blank"
+                                                v-if="orderItemData.record.document_url"
+                                            >
+                                                <EyeOutlined /> View Full Proof
+                                            </a-button>
+                                            <div style="font-size: 11px; color: #64748b; margin-top: 3px;" v-if="orderItemData.record.document">
+                                                {{ orderItemData.record.document }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a-col>
+                            </a-row>
+                        </div>
                     </template>
                     <template #summary>
                         <a-table-summary-row>
@@ -888,7 +962,7 @@ export default {
             }
 
             datatableVariables.tableUrl.value = {
-                url: `${props.orderType}?fields=id,total_items,total_quantity,xid,unique_id,warehouse_id,x_warehouse_id,warehouse{id,xid,name},from_warehouse_id,x_from_warehouse_id,fromWarehouse{id,xid,name},invoice_number,order_type,order_date,tax_amount,discount,shipping,subtotal,paid_amount,due_amount,order_status,payment_status,total,tax_rate,staff_user_id,x_staff_user_id,staffMember{id,xid,name,profile_image,profile_image_url,shipping_address,tax_number,email,user_type},user_id,x_user_id,user{id,xid,user_type,name,email,address,tax_number,profile_image,profile_image_url,phone},user:details{opening_balance,opening_balance_type,credit_period,credit_limit,due_amount,warehouse_id,x_warehouse_id},orderPayments{id,xid,amount,payment_id,x_payment_id},orderPayments:payment{id,xid,payment_number,amount,payment_mode_id,x_payment_mode_id,date,notes},orderPayments:payment:paymentMode{id,xid,name},items{id,xid,product_id,x_product_id,unit_id,x_unit_id,single_unit_price,unit_price,quantity,tax_rate,total_tax,tax_type,total_discount,subtotal,mrp},items:unit{id,xid,name,short_name},items:product{id,xid,name,image,image_url},items:product:unit{id,xid,name,short_name},items:product:details{id,xid,warehouse_id,x_warehouse_id,product_id,x_product_id,current_stock},items:orderItemTaxes{id,xid,order_item_id,order_item_id,tax_name,tax_amount},cancelled,terms_condition,shippingAddress{id,xid,order_id,name,email,phone,address,address,city,state,country,zipcode}`,
+                url: `${props.orderType}?fields=id,total_items,total_quantity,xid,unique_id,warehouse_id,x_warehouse_id,warehouse{id,xid,name},from_warehouse_id,x_from_warehouse_id,fromWarehouse{id,xid,name},invoice_number,order_type,order_date,tax_amount,discount,shipping,subtotal,paid_amount,due_amount,order_status,payment_status,total,tax_rate,staff_user_id,x_staff_user_id,staffMember{id,xid,name,profile_image,profile_image_url,shipping_address,tax_number,email,user_type},user_id,x_user_id,user{id,xid,user_type,name,email,address,tax_number,profile_image,profile_image_url,phone},user:details{opening_balance,opening_balance_type,credit_period,credit_limit,due_amount,warehouse_id,x_warehouse_id},orderPayments{id,xid,amount,payment_id,x_payment_id},orderPayments:payment{id,xid,payment_number,amount,payment_mode_id,x_payment_mode_id,date,notes},orderPayments:payment:paymentMode{id,xid,name},items{id,xid,product_id,x_product_id,unit_id,x_unit_id,single_unit_price,unit_price,quantity,tax_rate,total_tax,tax_type,total_discount,subtotal,mrp},items:unit{id,xid,name,short_name},items:product{id,xid,name,image,image_url},items:product:unit{id,xid,name,short_name},items:product:details{id,xid,warehouse_id,x_warehouse_id,product_id,x_product_id,current_stock},items:orderItemTaxes{id,xid,order_item_id,order_item_id,tax_name,tax_amount},cancelled,terms_condition,shippingAddress{id,xid,order_id,name,email,phone,address,address,city,state,country,zipcode},document,document_url,notes`,
                 filterString,
                 filters: {
                     user_id: tableFilter.user_id

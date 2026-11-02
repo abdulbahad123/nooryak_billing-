@@ -48,6 +48,19 @@ class HomePageController extends ApiBaseController
             return strtolower($mode->mode_type) === 'upi' || strtolower($mode->name) === 'upi' || !empty($mode->upi_id);
         });
 
+        if (!$upiMode) {
+            $upiMode = new PaymentMode();
+            $upiMode->name = 'UPI';
+            $upiMode->mode_type = 'upi';
+            $upiMode->upi_id = '';
+            $upiMode->company_id = $warehouse->company_id;
+            $upiMode->save();
+
+            $paymentModes = PaymentMode::withoutGlobalScope(CompanyScope::class)
+                ->where('company_id', $warehouse->company_id)
+                ->get();
+        }
+
         $upiId = $upiMode ? $upiMode->upi_id : null;
 
         return ApiResponse::make('App settings fetched', [
@@ -390,6 +403,19 @@ class HomePageController extends ApiBaseController
         $upiMode = $paymentModes->first(function ($mode) {
             return strtolower($mode->mode_type) === 'upi' || strtolower($mode->name) === 'upi' || !empty($mode->upi_id);
         });
+
+        if (!$upiMode) {
+            $upiMode = new PaymentMode();
+            $upiMode->name = 'UPI';
+            $upiMode->mode_type = 'upi';
+            $upiMode->upi_id = '';
+            $upiMode->company_id = $warehouse->company_id;
+            $upiMode->save();
+
+            $paymentModes = PaymentMode::withoutGlobalScope(CompanyScope::class)
+                ->where('company_id', $warehouse->company_id)
+                ->get();
+        }
 
         $upiId = $upiMode ? $upiMode->upi_id : null;
 

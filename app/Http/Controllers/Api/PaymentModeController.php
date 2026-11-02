@@ -20,6 +20,38 @@ class PaymentModeController extends ApiBaseController
     protected $updateRequest = UpdateRequest::class;
     protected $deleteRequest = DeleteRequest::class;
 
+    protected function modifyIndex($query)
+    {
+        $company = company();
+        $companyId = $company ? $company->id : null;
+        if (!$companyId) {
+            $user = auth('api')->user();
+            if ($user && $user->company_id) {
+                $companyId = $user->company_id;
+            }
+        }
+
+        if ($companyId) {
+            $upiMode = PaymentMode::withoutGlobalScope(\App\Scopes\CompanyScope::class)
+                ->where('company_id', $companyId)
+                ->where(function ($q) {
+                    $q->where('name', 'UPI')
+                      ->orWhere('mode_type', 'upi');
+                })
+                ->first();
+
+            if (!$upiMode) {
+                $newUpi = new PaymentMode();
+                $newUpi->name = 'UPI';
+                $newUpi->mode_type = 'upi';
+                $newUpi->upi_id = '';
+                $newUpi->company_id = $companyId;
+                $newUpi->save();
+            }
+        }
+
+        return $query;
+    }
 
     public function destroying($paymentMode)
     {

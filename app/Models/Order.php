@@ -11,7 +11,7 @@ class Order extends BaseModel
 {
     protected $table = 'orders';
 
-    protected $default = ['xid'];
+    protected $default = ['xid', 'document', 'document_url', 'notes'];
 
     protected $guarded = ['id', 'warehouse_id', 'staff_user_id', 'order_type', 'created_at', 'updated_at'];
 
@@ -21,7 +21,7 @@ class Order extends BaseModel
 
     protected $dates = ['order_date'];
 
-    protected $filterable = ['id', 'invoice_number', 'payment_status', 'order_status', 'cancelled', 'order_date', 'user_id', 'warehouse_id', 'staff_user_id'];
+    protected $filterable = ['id', 'invoice_number', 'payment_status', 'order_status', 'cancelled', 'order_date', 'user_id', 'warehouse_id', 'staff_user_id', 'document', 'notes'];
 
     protected $hashableGetterFunctions = [
         'getXWarehouseIdAttribute' => 'warehouse_id',
