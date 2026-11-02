@@ -348,6 +348,8 @@ class Common
             $folderString = "websiteImagePath";
         } else if ($folder == "offline-requests") {
             $folderString = "offlineRequestDocumentPath";
+        } else if ($folder == "orders") {
+            $folderString = "orderDocumentPath";
         }
 
         $folderPath = self::getFolderPath($folderString);

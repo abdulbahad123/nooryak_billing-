@@ -14,6 +14,7 @@ use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\FrontProductCard;
 use App\Models\FrontWebsiteSettings;
+use App\Models\PaymentMode;
 use App\Models\Product;
 use App\Models\UserDetails;
 use App\Models\Warehouse;
@@ -22,6 +23,7 @@ use Carbon\Carbon;
 use Examyou\RestAPI\ApiResponse;
 use Examyou\RestAPI\Exceptions\ApiException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Vinkla\Hashids\Facades\Hashids;
 
 class HomePageController extends ApiBaseController
@@ -38,9 +40,22 @@ class HomePageController extends ApiBaseController
             ->withoutGlobalScope('current_warehouse')
             ->where('warehouse_id', $warehouse->id)->first();
 
+        $paymentModes = PaymentMode::withoutGlobalScope(CompanyScope::class)
+            ->where('company_id', $warehouse->company_id)
+            ->get();
+
+        $upiMode = $paymentModes->first(function ($mode) {
+            return strtolower($mode->mode_type) === 'upi' || strtolower($mode->name) === 'upi' || !empty($mode->upi_id);
+        });
+
+        $upiId = $upiMode ? $upiMode->upi_id : null;
+
         return ApiResponse::make('App settings fetched', [
             'app' => $settings,
-            'warehouse' => $warehouse
+            'warehouse' => $warehouse,
+            'upi_id' => $upiId,
+            'upi_mode' => $upiMode,
+            'payment_modes' => $paymentModes,
         ]);
     }
 
@@ -318,6 +333,71 @@ class HomePageController extends ApiBaseController
             'product' => $product,
             'related_products' => $relatedProducts,
             'currency' => $currency
+        ]);
+    }
+
+    public function guestLogin(Request $request)
+    {
+        $storeSlug = $request->warehouse;
+        $warehouse = Warehouse::select('id', 'company_id')->withoutGlobalScope(CompanyScope::class)->where('slug', $storeSlug)->first();
+
+        if (!$warehouse) {
+            throw new ApiException("Not a valid warehouse");
+        }
+
+        $company = Company::find($warehouse->company_id);
+
+        // Find or create guest user for this session
+        $guestEmail = 'guest_' . strtolower(Str::random(10)) . '@guest.local';
+
+        $guestCustomer = new Customer();
+        $guestCustomer->name = 'Guest Customer';
+        $guestCustomer->email = $guestEmail;
+        $guestCustomer->phone = '';
+        $guestCustomer->password = Str::random(16);
+        $guestCustomer->company_id = $company->id;
+        $guestCustomer->warehouse_id = $warehouse->id;
+        $guestCustomer->is_walkin_customer = 0;
+        $guestCustomer->status = 'enabled';
+        $guestCustomer->save();
+
+        $allWarehouses = Warehouse::select('id')->where('company_id', $company->id)->get();
+        foreach ($allWarehouses as $allWarehouse) {
+            $customerDetails = new UserDetails();
+            $customerDetails->warehouse_id = $allWarehouse->id;
+            $customerDetails->user_id = $guestCustomer->id;
+            $customerDetails->credit_period = 30;
+            $customerDetails->save();
+        }
+
+        $token = auth('api_front')->login($guestCustomer);
+
+        return $this->respondWithToken($token);
+    }
+
+    public function paymentMethods($storeSlug)
+    {
+        $warehouse = Warehouse::withoutGlobalScope(CompanyScope::class)->where('slug', $storeSlug)->first();
+
+        if (!$warehouse) {
+            throw new ApiException("Not a valid warehouse");
+        }
+
+        $paymentModes = PaymentMode::withoutGlobalScope(CompanyScope::class)
+            ->where('company_id', $warehouse->company_id)
+            ->get();
+
+        $upiMode = $paymentModes->first(function ($mode) {
+            return strtolower($mode->mode_type) === 'upi' || strtolower($mode->name) === 'upi' || !empty($mode->upi_id);
+        });
+
+        $upiId = $upiMode ? $upiMode->upi_id : null;
+
+        return ApiResponse::make('Payment methods fetched', [
+            'payment_modes' => $paymentModes,
+            'upi_mode' => $upiMode,
+            'upi_id' => $upiId,
+            'store_name' => $warehouse->name,
         ]);
     }
 }

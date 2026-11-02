@@ -28,6 +28,7 @@ class StoreRequest extends FormRequest
         $rules = [
             'name'    => 'required',
             'mode_type'    => 'required',
+            'upi_id'       => 'nullable',
         ];
 
         return $rules;

@@ -230,6 +230,12 @@ class DashboardController extends ApiBaseController
             $order->total_items = $totalItems;
             $order->total_quantity = $totalQuantities;
             $order->company_id = $warehouse->company_id;
+            if ($request->has('document') && !empty($request->document)) {
+                $order->document = $request->document;
+            }
+            if ($request->has('notes') && !empty($request->notes)) {
+                $order->notes = $request->notes;
+            }
             $order->save();
 
             $orderShippingAddress = new OrderShippingAddress();

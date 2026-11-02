@@ -14,6 +14,8 @@ ApiRoute::group(['prefix' => 'front', 'namespace' => 'App\Http\Controllers\Api\F
 
     ApiRoute::post('login', ['as' => 'api.front.login', 'uses' => 'HomePageController@login']);
     ApiRoute::post('signup', ['as' => 'api.front.signup', 'uses' => 'HomePageController@signup']);
+    ApiRoute::post('guest-login', ['as' => 'api.front.guest-login', 'uses' => 'HomePageController@guestLogin']);
+    ApiRoute::get('payment-methods/{warehouse}', ['as' => 'api.front.payment-methods', 'uses' => 'HomePageController@paymentMethods']);
     ApiRoute::post('refresh-token', ['as' => 'api.front.refresh-token', 'uses' => 'HomePageController@refreshToken']);
     ApiRoute::post('logout', ['as' => 'api.front.logout', 'uses' => 'HomePageController@logout']);
 

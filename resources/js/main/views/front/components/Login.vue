@@ -20,7 +20,25 @@
                 </p>
             </div>
 
-            <a-form layout="vertical" class="mt-30">
+            <!-- Guest Account / Quick Checkout Option -->
+            <div class="guest-account-section mt-25">
+                <a-button
+                    type="default"
+                    size="large"
+                    class="guest-login-btn"
+                    block
+                    :loading="guestLoading"
+                    @click="onGuestLogin"
+                >
+                    <template #icon><user-outlined /></template>
+                    Continue as Guest Account
+                </a-button>
+                <div class="guest-divider">
+                    <span>or login with email / password</span>
+                </div>
+            </div>
+
+            <a-form layout="vertical" class="mt-20">
                 <a-alert
                     v-if="errorMessage != ''"
                     :message="errorMessage"
@@ -265,6 +283,38 @@ export default defineComponent({
             visible.value = true;
         };
 
+        const guestLoading = ref(false);
+
+        const onGuestLogin = () => {
+            guestLoading.value = true;
+            errorMessage.value = "";
+
+            addEditRequestFront({
+                url: "front/guest-login",
+                data: { warehouse: frontWarehouse.value.slug },
+                successMessage: t("front.logged_in_successfully"),
+                success: (res) => {
+                    guestLoading.value = false;
+                    store.commit("front/updateUser", res.user);
+                    store.commit("front/updateToken", res.token);
+                    store.commit("front/updateExpires", res.expires_in);
+
+                    visible.value = false;
+
+                    router.push({
+                        name: "front.checkout",
+                        params: { warehouse: frontWarehouse.value.slug },
+                    });
+                },
+                error: (errorRules) => {
+                    guestLoading.value = false;
+                    if (errorRules.error_message) {
+                        errorMessage.value = errorRules.error_message;
+                    }
+                },
+            });
+        };
+
         const onLogin = () => {
             errorMessage.value = "";
 
@@ -279,10 +329,18 @@ export default defineComponent({
 
                     visible.value = false;
 
-                    router.push({
-                        name: "front.dashboard",
-                        params: { warehouse: frontWarehouse.value.slug },
-                    });
+                    const totalCartItems = store.getters["front/totalCartItems"];
+                    if (totalCartItems > 0) {
+                        router.push({
+                            name: "front.checkout",
+                            params: { warehouse: frontWarehouse.value.slug },
+                        });
+                    } else {
+                        router.push({
+                            name: "front.dashboard",
+                            params: { warehouse: frontWarehouse.value.slug },
+                        });
+                    }
                 },
                 error: (errorRules) => {
                     if (errorRules.error_message) {
@@ -325,6 +383,8 @@ export default defineComponent({
             visible,
             showLogin,
             onLogin,
+            guestLoading,
+            onGuestLogin,
             errorMessage,
             loading,
             frontWarehouse,
@@ -344,6 +404,53 @@ export default defineComponent({
 
 <style lang="less">
 .login-register-modal .ant-modal-content {
-    border-radius: 10px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.guest-account-section {
+    .guest-login-btn {
+        height: 44px;
+        font-size: 15px;
+        font-weight: 600;
+        border-radius: 8px;
+        background: #f0f7ff;
+        border: 1.5px dashed #1890ff;
+        color: #096dd9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s ease;
+
+        &:hover {
+            background: #e6f7ff;
+            border-color: #096dd9;
+            color: #0050b3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+        }
+    }
+
+    .guest-divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: #8c8c8c;
+        font-size: 12px;
+        margin: 18px 0 10px 0;
+
+        &::before,
+        &::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        span {
+            padding: 0 12px;
+            text-transform: lowercase;
+            letter-spacing: 0.3px;
+        }
+    }
 }
 </style>

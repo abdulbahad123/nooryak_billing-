@@ -62,8 +62,9 @@ class Order extends BaseModel
     public function getDocumentUrlAttribute()
     {
         $orderDocumentPath = Common::getFolderPath('orderDocumentPath');
+        $doc = $this->document ?: $this->image;
 
-        return $this->image == null ? asset('images/order.png') : Common::getFileUrl($orderDocumentPath, $this->image);
+        return $doc == null ? null : Common::getFileUrl($orderDocumentPath, $doc);
     }
 
     public function items()

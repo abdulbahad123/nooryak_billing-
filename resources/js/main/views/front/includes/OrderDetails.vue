@@ -48,7 +48,52 @@
             <a-descriptions-item :label="$t('stock.billing_address')">
                 {{ order.shipping_address.address }}
             </a-descriptions-item>
+
+            <a-descriptions-item label="Payment Notes" v-if="order.notes">
+                {{ order.notes }}
+            </a-descriptions-item>
         </a-descriptions>
+    </div>
+
+    <!-- Payment Proof Banner (Visible on Dashboard and Admin) -->
+    <div v-if="order.document_url || order.document" class="payment-proof-section mt-20 mb-20">
+        <a-card :bordered="true" size="small" style="border-radius: 8px; background: #f8fafc; border: 1.5px solid #e2e8f0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 4px;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <a :href="order.document_url" target="_blank" v-if="order.document_url">
+                        <img
+                            :src="order.document_url"
+                            alt="Payment Proof Receipt"
+                            style="width: 64px; height: 64px; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.06);"
+                        />
+                    </a>
+                    <div>
+                        <div style="font-weight: 700; font-size: 14px; color: #1e293b; display: flex; align-items: center; gap: 6px;">
+                            <check-circle-outlined style="color: #16a34a; font-size: 16px;" />
+                            UPI Payment Proof
+                        </div>
+                        <div style="color: #64748b; font-size: 12px; margin-top: 2px;" v-if="order.notes">
+                            {{ order.notes }}
+                        </div>
+                        <div style="color: #94a3b8; font-size: 11px; margin-top: 1px;" v-if="order.document">
+                            File: {{ order.document }}
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <a-button
+                        type="primary"
+                        ghost
+                        size="small"
+                        :href="order.document_url"
+                        target="_blank"
+                        v-if="order.document_url"
+                    >
+                        <eye-outlined /> View Full Proof
+                    </a-button>
+                </div>
+            </div>
+        </a-card>
     </div>
 
     <a-row class="mt-20">
@@ -132,7 +177,7 @@
 </template>
 <script>
 import { defineComponent, ref, computed, onMounted } from "vue";
-import { StopOutlined } from "@ant-design/icons-vue";
+import { StopOutlined, CheckCircleOutlined, EyeOutlined } from "@ant-design/icons-vue";
 import cart from "../../../../common/composable/cart";
 import { useStore } from "vuex";
 import common from "../../../../common/composable/common";
@@ -154,6 +199,8 @@ export default defineComponent({
         OrderStatus,
         PaymentStatus,
         StopOutlined,
+        CheckCircleOutlined,
+        EyeOutlined,
         OrderStatusTag,
     },
     setup(props, { emit }) {

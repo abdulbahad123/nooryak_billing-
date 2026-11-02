@@ -1,5 +1,13 @@
 <template>
-	<a-list item-layout="horizontal" :data-source="userAddresses">
+	<div v-if="userAddresses.length === 0" class="no-address-box mb-15 p-20" style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 8px; text-align: center; padding: 24px;">
+		<div style="color: #64748b; font-size: 14px; font-weight: 500; margin-bottom: 12px;">
+			Please add your shipping address to complete checkout
+		</div>
+		<a-button type="primary" @click="addAddress">
+			+ {{ $t("front.add_new_address") }}
+		</a-button>
+	</div>
+	<a-list v-else item-layout="horizontal" :data-source="userAddresses">
 		<template #renderItem="{ item }">
 			<a-list-item>
 				<template #actions>
@@ -31,8 +39,8 @@
 			</a-list-item>
 		</template>
 	</a-list>
-	<a-button class="pl-0" type="link" @click="addAddress">
-		{{ $t("front.add_new_address") }}
+	<a-button v-if="userAddresses.length > 0" class="pl-0" type="link" @click="addAddress">
+		+ {{ $t("front.add_new_address") }}
 	</a-button>
 	<AddEdit
 		:addEditVisible="addEditVisible"
@@ -77,20 +85,27 @@ export default defineComponent({
 		const getUserAddress = () => {
 			axiosFront.get(indexUrl).then((response) => {
 				userAddresses.value = response.data;
+				if (userAddresses.value && userAddresses.value.length > 0) {
+					if (!selectedAddress.value || !userAddresses.value.find(a => a.xid === selectedAddress.value)) {
+						selectedAddress.value = userAddresses.value[0].xid;
+						emit("onAddressSelection", selectedAddress.value);
+					}
+				}
 			});
 		};
 
 		const addAddress = () => {
+			const isGuest = user && (user.name === 'Guest Customer' || (user.email && user.email.includes('@guest.')));
 			addEditAddress.value = {
-				name: user.name,
-				phone: user.phone,
-				email: user.email,
-				address: user.address,
-				shipping_address: user.shipping_address,
-				city: user.city,
-				state: user.state,
-				country: user.country,
-				zipcode: user.zipcode,
+				name: isGuest ? '' : (user?.name || ''),
+				phone: user?.phone || '',
+				email: isGuest ? '' : (user?.email || ''),
+				address: user?.address || '',
+				shipping_address: user?.shipping_address || '',
+				city: user?.city || '',
+				state: user?.state || '',
+				country: user?.country || '',
+				zipcode: user?.zipcode || '',
 			};
 			addEditId.value = null;
 			addEditVisible.value = true;
@@ -117,7 +132,11 @@ export default defineComponent({
 			emit("onAddressSelection", selectedAddress.value);
 		};
 
-		const addEditSuccess = () => {
+		const addEditSuccess = (newId) => {
+			if (newId) {
+				selectedAddress.value = newId;
+				emit("onAddressSelection", newId);
+			}
 			getUserAddress();
 		};
 

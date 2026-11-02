@@ -47,7 +47,26 @@
                             <a-radio-button value="bank">
                                 {{ $t("payment_mode.bank") }}
                             </a-radio-button>
+                            <a-radio-button value="upi">
+                                UPI
+                            </a-radio-button>
                         </a-radio-group>
+                    </a-form-item>
+                </a-col>
+            </a-row>
+
+            <a-row :gutter="16" v-if="formData.mode_type == 'upi' || formData.upi_id || formData.name == 'UPI'">
+                <a-col :xs="24" :sm="24" :md="24" :lg="24">
+                    <a-form-item
+                        label="UPI ID"
+                        name="upi_id"
+                        :help="rules.upi_id ? rules.upi_id.message : null"
+                        :validateStatus="rules.upi_id ? 'error' : null"
+                    >
+                        <a-input
+                            v-model:value="formData.upi_id"
+                            placeholder="e.g. merchant@upi or yourname@okhdfcbank"
+                        />
                     </a-form-item>
                 </a-col>
             </a-row>

@@ -74,19 +74,40 @@
         </a-list>
 
         <template #footer>
-            <a-row type="flex" justify="start">
-                <a-col :span="12">
-                    <a-typography-title :level="5">
-                        Subtotal: {{ formatAmountCurrency(total) }}
-                    </a-typography-title>
-                </a-col>
-                <a-col :span="12">
-                    <a-button type="primary" @click="proceedCheckout" block>
-                        Checkout
+            <div class="drawer-footer-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span style="font-size: 15px; font-weight: 600; color: #4b5563;">Subtotal:</span>
+                    <span style="font-size: 18px; font-weight: 700; color: #1890ff;">{{ formatAmountCurrency(total) }}</span>
+                </div>
+                <div v-if="!isLoggedIn">
+                    <a-row :gutter="8">
+                        <a-col :span="12">
+                            <a-button
+                                type="default"
+                                block
+                                :loading="guestLoading"
+                                @click="proceedGuestCheckout"
+                                style="border-color: #1890ff; color: #1890ff; font-weight: 600;"
+                            >
+                                <user-outlined />
+                                Guest Checkout
+                            </a-button>
+                        </a-col>
+                        <a-col :span="12">
+                            <a-button type="primary" @click="proceedCheckout" block>
+                                Checkout
+                                <right-outlined />
+                            </a-button>
+                        </a-col>
+                    </a-row>
+                </div>
+                <div v-else>
+                    <a-button type="primary" size="large" @click="proceedCheckout" block>
+                        Proceed to Checkout
                         <right-outlined />
                     </a-button>
-                </a-col>
-            </a-row>
+                </div>
+            </div>
         </template>
     </a-drawer>
 </template>
@@ -98,6 +119,7 @@ import {
     CloseOutlined,
     DeleteOutlined,
     RightOutlined,
+    UserOutlined,
 } from "@ant-design/icons-vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -112,6 +134,7 @@ export default defineComponent({
         CloseOutlined,
         DeleteOutlined,
         RightOutlined,
+        UserOutlined,
     },
     setup(props, { emit }) {
         const store = useStore();
@@ -137,6 +160,30 @@ export default defineComponent({
             return store.getters["front/isLoggedIn"];
         });
 
+        const guestLoading = ref(false);
+
+        const proceedGuestCheckout = () => {
+            guestLoading.value = true;
+            axiosFront
+                .post("front/guest-login", { warehouse: frontWarehouse.value.slug })
+                .then((response) => {
+                    guestLoading.value = false;
+                    const res = response.data;
+                    store.commit("front/updateUser", res.user);
+                    store.commit("front/updateToken", res.token);
+                    store.commit("front/updateExpires", res.expires_in);
+                    visible.value = false;
+                    router.push({
+                        name: "front.checkout",
+                        params: { warehouse: frontWarehouse.value.slug },
+                    });
+                })
+                .catch(() => {
+                    guestLoading.value = false;
+                    emit("openLoginModal");
+                });
+        };
+
         const proceedCheckout = () => {
             visible.value = false;
 
@@ -161,10 +208,12 @@ export default defineComponent({
             updateCart,
             formatAmountCurrency,
             total,
-            proceedCheckout,
             getSalesPriceWithTax,
+            proceedCheckout,
+            proceedGuestCheckout,
+            guestLoading,
+            isLoggedIn,
             frontWarehouse,
-
             innerWidth: window.innerWidth,
         };
     },
