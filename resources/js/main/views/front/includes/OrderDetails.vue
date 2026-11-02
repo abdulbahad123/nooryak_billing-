@@ -80,7 +80,7 @@
                         </div>
                     </div>
                 </div>
-                <div>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                     <a-button
                         type="primary"
                         ghost
@@ -91,6 +91,28 @@
                     >
                         <eye-outlined /> View Full Proof
                     </a-button>
+
+                    <template v-if="detailView === 'admin'">
+                        <a-button
+                            v-if="order.payment_status !== 'paid'"
+                            type="primary"
+                            size="small"
+                            style="background: #16a34a; border-color: #16a34a;"
+                            @click="approvePayment(order)"
+                            :loading="approving"
+                        >
+                            <check-outlined /> Approve Payment
+                        </a-button>
+                        <a-button
+                            v-else
+                            danger
+                            size="small"
+                            @click="rejectPayment(order)"
+                            :loading="rejecting"
+                        >
+                            <close-outlined /> Disapprove
+                        </a-button>
+                    </template>
                 </div>
             </div>
         </a-card>
@@ -177,7 +199,8 @@
 </template>
 <script>
 import { defineComponent, ref, computed, onMounted } from "vue";
-import { StopOutlined, CheckCircleOutlined, EyeOutlined } from "@ant-design/icons-vue";
+import { StopOutlined, CheckCircleOutlined, EyeOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons-vue";
+import { notification } from "ant-design-vue";
 import cart from "../../../../common/composable/cart";
 import { useStore } from "vuex";
 import common from "../../../../common/composable/common";
@@ -201,6 +224,8 @@ export default defineComponent({
         StopOutlined,
         CheckCircleOutlined,
         EyeOutlined,
+        CheckOutlined,
+        CloseOutlined,
         OrderStatusTag,
     },
     setup(props, { emit }) {
@@ -208,6 +233,9 @@ export default defineComponent({
         const commonObj = common();
         const store = useStore();
         const warehouseCurrency = computed(() => store.state.front.warehouseCurrency);
+        const approving = ref(false);
+        const rejecting = ref(false);
+
         const columns = [
             {
                 title: "#",
@@ -239,11 +267,61 @@ export default defineComponent({
             }
         };
 
+        const approvePayment = (order) => {
+            approving.value = true;
+            axiosAdmin
+                .post(`online-orders/approve-payment/${order.unique_id}`)
+                .then(() => {
+                    approving.value = false;
+                    order.payment_status = "paid";
+                    order.paid_amount = order.total;
+                    order.due_amount = 0;
+                    notification.success({
+                        message: "Success",
+                        description: `Payment for order #${order.invoice_number} approved and marked as Paid!`,
+                    });
+                })
+                .catch((err) => {
+                    approving.value = false;
+                    notification.error({
+                        message: "Error",
+                        description: err?.response?.data?.message || "Failed to approve payment.",
+                    });
+                });
+        };
+
+        const rejectPayment = (order) => {
+            rejecting.value = true;
+            axiosAdmin
+                .post(`online-orders/reject-payment/${order.unique_id}`)
+                .then(() => {
+                    rejecting.value = false;
+                    order.payment_status = "unpaid";
+                    order.paid_amount = 0;
+                    order.due_amount = order.total;
+                    notification.warning({
+                        message: "Payment Disapproved",
+                        description: `Payment for order #${order.invoice_number} has been disapproved.`,
+                    });
+                })
+                .catch((err) => {
+                    rejecting.value = false;
+                    notification.error({
+                        message: "Error",
+                        description: err?.response?.data?.message || "Failed to disapprove payment.",
+                    });
+                });
+        };
+
         return {
             columns,
             formatAmountCurrency,
             buildAddress,
             warehouseCurrency,
+            approving,
+            rejecting,
+            approvePayment,
+            rejectPayment,
         };
     },
 });

@@ -1,7 +1,7 @@
 import { useI18n } from "vue-i18n";
 
 const fields = () => {
-    const url = "payment-modes?fields=id,xid,name,mode_type,upi_id";
+    const url = "payment-modes?fields=id,xid,name,mode_type,credentials";
     const addEditUrl = "payment-modes";
     const { t } = useI18n();
 

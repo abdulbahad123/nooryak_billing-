@@ -22,32 +22,46 @@ class PaymentModeController extends ApiBaseController
 
     protected function modifyIndex($query)
     {
-        $company = company();
-        $companyId = $company ? $company->id : null;
-        if (!$companyId) {
-            $user = auth('api')->user();
-            if ($user && $user->company_id) {
-                $companyId = $user->company_id;
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('payment_modes') && !\Illuminate\Support\Facades\Schema::hasColumn('payment_modes', 'upi_id')) {
+                \Illuminate\Support\Facades\Schema::table('payment_modes', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('upi_id')->nullable()->default(null);
+                });
             }
+        } catch (\Exception $e) {
+            // ignore
         }
 
-        if ($companyId) {
-            $upiMode = PaymentMode::withoutGlobalScope(\App\Scopes\CompanyScope::class)
-                ->where('company_id', $companyId)
-                ->where(function ($q) {
-                    $q->where('name', 'UPI')
-                      ->orWhere('mode_type', 'upi');
-                })
-                ->first();
-
-            if (!$upiMode) {
-                $newUpi = new PaymentMode();
-                $newUpi->name = 'UPI';
-                $newUpi->mode_type = 'upi';
-                $newUpi->upi_id = '';
-                $newUpi->company_id = $companyId;
-                $newUpi->save();
+        try {
+            $company = company();
+            $companyId = $company ? $company->id : null;
+            if (!$companyId) {
+                $user = auth('api')->user();
+                if ($user && $user->company_id) {
+                    $companyId = $user->company_id;
+                }
             }
+
+            if ($companyId) {
+                $upiMode = PaymentMode::withoutGlobalScope(\App\Scopes\CompanyScope::class)
+                    ->where('company_id', $companyId)
+                    ->where(function ($q) {
+                        $q->where('name', 'UPI')
+                          ->orWhere('mode_type', 'upi');
+                    })
+                    ->first();
+
+                if (!$upiMode) {
+                    $newUpi = new PaymentMode();
+                    $newUpi->name = 'UPI';
+                    $newUpi->mode_type = 'upi';
+                    $newUpi->company_id = $companyId;
+                    $newUpi->credentials = ['upi_id' => ''];
+                    $newUpi->save();
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error in PaymentModeController modifyIndex: ' . $e->getMessage());
         }
 
         return $query;

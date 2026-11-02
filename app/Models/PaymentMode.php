@@ -9,11 +9,11 @@ class PaymentMode extends BaseModel
 {
     protected $table = 'payment_modes';
 
-    protected $default = ['xid', 'name', 'mode_type', 'upi_id'];
+    protected $default = ['xid', 'name', 'mode_type', 'credentials'];
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
-    protected $filterable = ['name', 'mode_type', 'upi_id'];
+    protected $filterable = ['name', 'mode_type'];
 
     protected $hidden = ['id'];
 
@@ -39,7 +39,9 @@ class PaymentMode extends BaseModel
 
     public function setUpiIdAttribute($value)
     {
-        $this->attributes['upi_id'] = $value;
+        if (array_key_exists('upi_id', $this->attributes)) {
+            $this->attributes['upi_id'] = $value;
+        }
         $credentials = $this->credentials ?? [];
         if (!is_array($credentials)) {
             $credentials = [];

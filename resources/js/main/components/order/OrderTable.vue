@@ -554,8 +554,8 @@
                             "
                             style="margin-top: 14px; padding: 14px 18px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px;"
                         >
-                            <a-row :gutter="16" align="middle">
-                                <a-col :xs="24" :sm="12" :md="6">
+                            <a-row :gutter="[16, 16]" align="middle">
+                                <a-col :xs="24" :sm="12" :md="5">
                                     <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px;">
                                         Payment Method
                                     </div>
@@ -576,7 +576,7 @@
                                     </div>
                                 </a-col>
 
-                                <a-col :xs="24" :sm="12" :md="10" v-if="orderItemData.record.notes">
+                                <a-col :xs="24" :sm="12" :md="6" v-if="orderItemData.record.notes">
                                     <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px;">
                                         Payment Notes / Reference
                                     </div>
@@ -585,7 +585,7 @@
                                     </div>
                                 </a-col>
 
-                                <a-col :xs="24" :sm="24" :md="8" v-if="orderItemData.record.document_url || orderItemData.record.document">
+                                <a-col :xs="24" :sm="24" :md="6" v-if="orderItemData.record.document_url || orderItemData.record.document">
                                     <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 4px;">
                                         Payment Proof Receipt
                                     </div>
@@ -611,6 +611,47 @@
                                                 {{ orderItemData.record.document }}
                                             </div>
                                         </div>
+                                    </div>
+                                </a-col>
+
+                                <a-col :xs="24" :sm="24" :md="7" v-if="orderItemData.record.order_type == 'online-orders'">
+                                    <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 4px;">
+                                        Payment Verification
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+                                        <template v-if="orderItemData.record.payment_status === 'paid'">
+                                            <a-tag color="success" style="font-size: 13px; padding: 4px 10px; font-weight: 600;">
+                                                <CheckCircleOutlined /> Payment Approved & Paid
+                                            </a-tag>
+                                            <a-button
+                                                danger
+                                                size="small"
+                                                @click="rejectOnlinePayment(orderItemData.record)"
+                                                :loading="rejectingPaymentId === orderItemData.record.xid"
+                                                title="Revert to Unpaid if needed"
+                                            >
+                                                Disapprove
+                                            </a-button>
+                                        </template>
+                                        <template v-else>
+                                            <a-button
+                                                type="primary"
+                                                size="middle"
+                                                style="background: #16a34a; border-color: #16a34a; font-weight: 600;"
+                                                @click="approveOnlinePayment(orderItemData.record)"
+                                                :loading="approvingPaymentId === orderItemData.record.xid"
+                                            >
+                                                <CheckOutlined /> Approve Payment
+                                            </a-button>
+                                            <a-button
+                                                danger
+                                                size="middle"
+                                                @click="rejectOnlinePayment(orderItemData.record)"
+                                                :loading="rejectingPaymentId === orderItemData.record.xid"
+                                            >
+                                                <CloseOutlined /> Disapprove
+                                            </a-button>
+                                        </template>
                                     </div>
                                 </a-col>
                             </a-row>
@@ -719,6 +760,8 @@ import {
     MoreOutlined,
     DownloadOutlined,
     CheckOutlined,
+    CheckCircleOutlined,
+    CloseOutlined,
     StopOutlined,
     SendOutlined,
     SisternodeOutlined,
@@ -778,6 +821,8 @@ export default {
         ExclamationCircleOutlined,
         SisternodeOutlined,
         CheckOutlined,
+        CheckCircleOutlined,
+        CloseOutlined,
         StopOutlined,
         SendOutlined,
         WalletOutlined,
@@ -1220,6 +1265,83 @@ export default {
         };
         // End For Online Orders
 
+        const approvingPaymentId = ref(null);
+        const rejectingPaymentId = ref(null);
+
+        const approveOnlinePayment = (order) => {
+            Modal.confirm({
+                title: "Approve Payment?",
+                icon: createVNode(CheckCircleOutlined, { style: "color: #16a34a" }),
+                content: `Are you sure you want to approve payment for order #${order.invoice_number}? This will record the payment and mark the status as Paid.`,
+                centered: true,
+                okText: "Approve & Mark Paid",
+                okType: "primary",
+                cancelText: t("common.cancel"),
+                onOk() {
+                    approvingPaymentId.value = order.xid;
+                    axiosAdmin
+                        .post(`online-orders/approve-payment/${order.unique_id}`)
+                        .then(() => {
+                            approvingPaymentId.value = null;
+                            order.payment_status = "paid";
+                            order.paid_amount = order.total;
+                            order.due_amount = 0;
+                            initialSetup();
+                            notification.success({
+                                message: t("common.success") || "Success",
+                                description: `Payment for order #${order.invoice_number} approved and marked as Paid!`,
+                                placement: "bottomRight",
+                            });
+                        })
+                        .catch((err) => {
+                            approvingPaymentId.value = null;
+                            notification.error({
+                                message: t("common.error") || "Error",
+                                description: err?.response?.data?.message || "Failed to approve payment.",
+                                placement: "bottomRight",
+                            });
+                        });
+                },
+            });
+        };
+
+        const rejectOnlinePayment = (order) => {
+            Modal.confirm({
+                title: "Disapprove Payment?",
+                icon: createVNode(ExclamationCircleOutlined, { style: "color: #ef4444" }),
+                content: `Are you sure you want to disapprove payment for order #${order.invoice_number}? The order will remain Unpaid.`,
+                centered: true,
+                okText: "Disapprove",
+                okType: "danger",
+                cancelText: t("common.cancel"),
+                onOk() {
+                    rejectingPaymentId.value = order.xid;
+                    axiosAdmin
+                        .post(`online-orders/reject-payment/${order.unique_id}`)
+                        .then(() => {
+                            rejectingPaymentId.value = null;
+                            order.payment_status = "unpaid";
+                            order.paid_amount = 0;
+                            order.due_amount = order.total;
+                            initialSetup();
+                            notification.warning({
+                                message: "Payment Disapproved",
+                                description: `Payment for order #${order.invoice_number} has been disapproved.`,
+                                placement: "bottomRight",
+                            });
+                        })
+                        .catch((err) => {
+                            rejectingPaymentId.value = null;
+                            notification.error({
+                                message: t("common.error") || "Error",
+                                description: err?.response?.data?.message || "Failed to disapprove payment.",
+                                placement: "bottomRight",
+                            });
+                        });
+                },
+            });
+        };
+
         const resetSelectedRows = () => {
             datatableVariables.table.selectedRowKeys = [];
             emit("onRowSelection", []);
@@ -1374,6 +1496,10 @@ export default {
             confirmModalVisible,
             viewModalVisible,
             modalData,
+            approvingPaymentId,
+            rejectingPaymentId,
+            approveOnlinePayment,
+            rejectOnlinePayment,
             // End For Online Orders
             getCheckboxProps,
 

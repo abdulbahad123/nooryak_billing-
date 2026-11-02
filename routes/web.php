@@ -55,6 +55,8 @@ ApiRoute::group(['namespace' => 'App\Http\Controllers\Api'], function () {
         ApiRoute::post('online-orders/change-status/{id}', ['as' => 'api.online-orders.change-status', 'uses' => 'OnlineOrdersController@changeOrderStatus']);
         ApiRoute::post('online-orders/confirm/{id}', ['as' => 'api.online-orders.confirm', 'uses' => 'OnlineOrdersController@confirmOrder']);
         ApiRoute::post('online-orders/cancel/{id}', ['as' => 'api.online-orders.cancel', 'uses' => 'OnlineOrdersController@cancelOrder']);
+        ApiRoute::post('online-orders/approve-payment/{id}', ['as' => 'api.online-orders.approve-payment', 'uses' => 'OnlineOrdersController@approvePayment']);
+        ApiRoute::post('online-orders/reject-payment/{id}', ['as' => 'api.online-orders.reject-payment', 'uses' => 'OnlineOrdersController@rejectPayment']);
         ApiRoute::resource('online-orders', 'OnlineOrdersController', ['as' => 'api', 'only' => ['index']]);
 
         // Quotations
